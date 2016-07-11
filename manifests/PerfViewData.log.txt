@@ -1,0 +1,4 @@
+[EXECUTING: PerfView /nogui userCommand DumpRegisteredManifest .NET Common Language Runtime]
+[Running User Command: DumpRegisteredManifest .NET Common Language Runtime]
+[Output written to .NET Common Language Runtime.manifest.xml]
+[DONE 09:58:10 SUCCESS: PerfView /nogui userCommand DumpRegisteredManifest .NET Common Language Runtime]
