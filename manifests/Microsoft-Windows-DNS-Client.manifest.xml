@@ -367,12 +367,19 @@
       <data name="ReferenceContext" inType="win:UInt32"/>
      </template>
      <template tid="DnsV6TupleArgs">
-      <data name="SourceAddress" inType="win:Binary"/>
+       <!--FIX-->
+       <!--without AddressLenght the code is incorrectly generated-->
+       <!--<data name="SourceAddress" inType="win:Binary"/>-->
+       <data name="SourceAddress" inType="win:Binary" length="AddressLength"/>
       <data name="SourcePort" inType="win:UInt32"/>
-      <data name="DestinationAddress" inType="win:Binary"/>
+       <!--<data name="DestinationAddress" inType="win:Binary"/>-->
+       <data name="DestinationAddress" inType="win:Binary" length="AddressLength"/>
       <data name="DestinationPort" inType="win:UInt32"/>
       <data name="Protocol" inType="win:UInt32"/>
       <data name="ReferenceContext" inType="win:UInt32"/>
+       <data name="AddressLength" inType="win:UInt32"/>
+       <!--address does not belong originally here-->
+       <data name="Address" inType="win:Binary" length="AddressLength"/>
      </template>
      <template tid="DnsInterfaceInfoArgs">
       <data name="IfGuid" inType="win:GUID"/>

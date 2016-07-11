@@ -1,7 +1,11 @@
 ﻿using Microsoft.Diagnostics.Tracing;
+using Microsoft.Diagnostics.Tracing.Parsers;
+using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
+using Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsDNSClient;
 using Microsoft.Diagnostics.Tracing.Session;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,21 +14,16 @@ namespace EventTraceExperiments
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
 
-            using (var session = new TraceEventSession("MyRealTimeSession"))         // Create a session to listen for events
-            {
-                session.Source.Dynamic.All += delegate (TraceEvent data)              // Set Source (stream of events) from session.  
-                {                                                                    // Get dynamic parser (knows about EventSources) 
-                                                                                     // Subscribe to all EventSource events
-                    Console.WriteLine("GOT Event " + data);                          // Print each message as it comes in 
-                };
+            //Task.Run(()=> DNS.FailedQuery());
+            //Task.Run(() => DNS.DNSTimeout());
+            //Task.Run(() => DNS.All());
+            //Task.Run(() => CLR.ExceptionRaised());
+            Task.Run(() => CLR.ExceptionCatchStart());
 
-                var eventSourceGuid = TraceEventProviders.GetEventSourceGuidFromName("MyEventSource"); // Get the unique ID for the eventSouce. 
-                session.EnableProvider(eventSourceGuid);                                               // Enable MyEventSource.
-                session.Source.Process();                                                              // Wait for incoming events (forever).  
-            }
+            Console.Read();
         }
     }
 }
