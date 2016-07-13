@@ -17,11 +17,11 @@ namespace EventTraceExperiments
         static void Main()
         {
 
-            //Task.Run(()=> DNS.FailedQuery());
+            Task.Run(() => DNS.FailedQuery());
             //Task.Run(() => DNS.DNSTimeout());
             //Task.Run(() => DNS.All());
             //Task.Run(() => CLR.ExceptionRaised());
-            Task.Run(() => CLR.ExceptionCatchStart());
+            //Task.Run(() => CLR.ExceptionCatchStart());
 
             Console.Read();
         }

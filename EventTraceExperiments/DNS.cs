@@ -1,5 +1,6 @@
 ﻿using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Parsers;
+using Microsoft.Diagnostics.Tracing.Parsers.DNS;
 using Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsDNSClient;
 using Microsoft.Diagnostics.Tracing.Session;
 using System;
@@ -22,8 +23,8 @@ namespace EventTraceExperiments
             using (var session = new TraceEventSession("DNS"))
             {
 
-                var dns = new MicrosoftWindowsDNSClientTraceEventParser(session.Source);
-                session.EnableProvider(MicrosoftWindowsDNSClientTraceEventParser.ProviderGuid);
+                var dns = new DNSWin2012en(session.Source);
+                session.EnableProvider(DNSWin2012en.ProviderGuid);
 
                 var processName = string.Empty;
                 dns.task_03006 += (task_03006Args data) =>

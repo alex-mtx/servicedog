@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{47BBA234
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "manifests", "manifests", "{D7C573EB-24E9-4A8B-97D7-D67EC9878853}"
 	ProjectSection(SolutionItems) = preProject
+		manifests\.NET Common Language Runtime.manifest.xml = manifests\.NET Common Language Runtime.manifest.xml
 		manifests\Microsoft-Windows-DNS-Client.manifest.xml = manifests\Microsoft-Windows-DNS-Client.manifest.xml
 		manifests\Microsoft-Windows-RPC.manifest.xml = manifests\Microsoft-Windows-RPC.manifest.xml
 		manifests\Microsoft-Windows-WinHttp.manifest.xml = manifests\Microsoft-Windows-WinHttp.manifest.xml

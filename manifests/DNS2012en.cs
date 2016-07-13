@@ -2982,14 +2982,12 @@ namespace Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsDNSClient
     }
     public sealed class DnsV6TupleArgs : TraceEvent
     {
-        public byte[] SourceAddress { get { return GetByteArrayAt(0, AddressLength); } }
-        public int SourcePort { get { return GetInt32At(0+ (AddressLength*1)); } }
-        public byte[] DestinationAddress { get { return GetByteArrayAt(0+ (AddressLength*1)+4, AddressLength); } }
-        public int DestinationPort { get { return GetInt32At(0+ (AddressLength*1)+ (AddressLength*1)+4); } }
-        public int Protocol { get { return GetInt32At(0+ (AddressLength*1)+ (AddressLength*1)+8); } }
-        public int ReferenceContext { get { return GetInt32At(0+ (AddressLength*1)+ (AddressLength*1)+12); } }
-        public int AddressLength { get { return GetInt32At(0+ (AddressLength*1)+ (AddressLength*1)+16); } }
-        public byte[] Address { get { return GetByteArrayAt(0+ (AddressLength*1)+ (AddressLength*1)+20, AddressLength); } }
+        public byte[] SourceAddress { get { return GetByteArrayAt(0); } }
+        public int SourcePort { get { return GetInt32At(1); } }
+        public byte[] DestinationAddress { get { return GetByteArrayAt(5); } }
+        public int DestinationPort { get { return GetInt32At(6); } }
+        public int Protocol { get { return GetInt32At(10); } }
+        public int ReferenceContext { get { return GetInt32At(14); } }
 
         #region Private
         internal DnsV6TupleArgs(Action<DnsV6TupleArgs> target, int eventID, int task, string taskName, Guid taskGuid, int opcode, string opcodeName, Guid providerGuid, string providerName)
@@ -3003,8 +3001,8 @@ namespace Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsDNSClient
         }
         protected override void Validate()
         {
-            Debug.Assert(!(Version == 0 && EventDataLength != 0+ (AddressLength*1)+ (AddressLength*1)+ (AddressLength*1)+20));
-            Debug.Assert(!(Version > 0 && EventDataLength < 0+ (AddressLength*1)+ (AddressLength*1)+ (AddressLength*1)+20));
+            Debug.Assert(!(Version == 0 && EventDataLength != 18));
+            Debug.Assert(!(Version > 0 && EventDataLength < 18));
         }
         protected override Delegate Target
         {
@@ -3014,11 +3012,12 @@ namespace Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsDNSClient
         public override StringBuilder ToXml(StringBuilder sb)
         {
              Prefix(sb);
+             XmlAttrib(sb, "SourceAddress", SourceAddress);
              XmlAttrib(sb, "SourcePort", SourcePort);
+             XmlAttrib(sb, "DestinationAddress", DestinationAddress);
              XmlAttrib(sb, "DestinationPort", DestinationPort);
              XmlAttrib(sb, "Protocol", Protocol);
              XmlAttrib(sb, "ReferenceContext", ReferenceContext);
-             XmlAttrib(sb, "AddressLength", AddressLength);
              sb.Append("/>");
              return sb;
         }
@@ -3028,7 +3027,7 @@ namespace Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsDNSClient
             get
             {
                 if (payloadNames == null)
-                    payloadNames = new string[] { "SourceAddress", "SourcePort", "DestinationAddress", "DestinationPort", "Protocol", "ReferenceContext", "AddressLength", "Address"};
+                    payloadNames = new string[] { "SourceAddress", "SourcePort", "DestinationAddress", "DestinationPort", "Protocol", "ReferenceContext"};
                 return payloadNames;
             }
         }
@@ -3038,15 +3037,17 @@ namespace Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsDNSClient
             switch (index)
             {
                 case 0:
-                    return SourcePort;
+                    return SourceAddress;
                 case 1:
-                    return DestinationPort;
+                    return SourcePort;
                 case 2:
-                    return Protocol;
+                    return DestinationAddress;
                 case 3:
-                    return ReferenceContext;
+                    return DestinationPort;
                 case 4:
-                    return AddressLength;
+                    return Protocol;
+                case 5:
+                    return ReferenceContext;
                 default:
                     Debug.Assert(false, "Bad field index");
                     return null;
@@ -4044,7 +4045,7 @@ namespace Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsDNSClient
     }
     public enum DnsIpType
     {
-        staticIp = 0x0,
-        dynamicIp = 0x1,
+        static = 0x0,
+        dynamic = 0x1,
     }
 }
