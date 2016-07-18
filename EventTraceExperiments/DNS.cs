@@ -12,35 +12,68 @@ using System.Threading.Tasks;
 
 namespace EventTraceExperiments
 {
+    /// <summary>
+    /// Below implementation depends on Operating System version, since provider has evolved between them.
+    /// <see cref="https://technet.microsoft.com/en-us/library/dn305896(v=ws.11).aspx"/>
+    /// </summary>
     static class DNS
     {
         private static List<string> _ignoredTemplateTypes = new List<string>();
 
-       
+
         public static void FailedQuery()
         {//task_03006Args
 
-            using (var session = new TraceEventSession("DNS"))
+            using (var session = new TraceEventSession("servicedog-DNS-DnsNameError"))
             {
-
-                var dns = new DNSWin2012en(session.Source);
-                session.EnableProvider(DNSWin2012en.ProviderGuid);
-
-                var processName = string.Empty;
-                dns.task_03006 += (task_03006Args data) =>
+                if (OSVersionChecker.IsWindows7Or2008R2())
                 {
-                    try
-                    {
-                        processName = data.ProcessName == string.Empty ? Process.GetProcessById(data.ProcessID).ProcessName : data.ProcessName;
+                    Console.WriteLine("DNSWin2008en");
+                    var dns = new DNSWin2008en(session.Source);
+                    session.EnableProvider(DNSWin2008en.ProviderName, providerLevel: TraceEventLevel.Informational);
 
-                        Console.WriteLine(processName + " failed on " + data.QueryName);
-                    }
-                    catch (ArgumentException e)
+                    var proccessInfo = string.Empty;
+                    dns.DnsNameError += (DnsAllServersTimeoutArgs data) =>
                     {
-                        //process is dead
-                    }
-                };
+                        try
+                        {
+                            proccessInfo = Process.GetProcessById(data.ProcessID).ProcessName;
 
+                            //filtering out our local domain
+                            if (data.QueryName.Contains("lanet"))
+                                Console.WriteLine(proccessInfo + " failed on " + data.QueryName);
+                        }
+                        catch (ArgumentException e)
+                        {
+                            //process is dead
+                        }
+                    };
+                }
+                else
+                {
+                    Console.WriteLine("DNSWin2012en");
+
+                    var dns = new DNSWin2012en(session.Source);
+                    session.EnableProvider(DNSWin2012en.ProviderGuid, TraceEventLevel.Informational,
+                        matchAnyKeywords: (ulong)DNSWin2012en.Keywords.Utl2connectpath);
+
+                    var proccessInfo = string.Empty;
+                    dns.task_03006 += (task_03006Args data) =>
+                     {
+                         try
+                         {
+                             proccessInfo = Process.GetProcessById(data.ProcessID).ProcessName;
+
+                            //filtering out our local domain
+                            if (data.QueryName.Contains("lanet"))
+                                 Console.WriteLine(proccessInfo + " failed on " + data.QueryName);
+                         }
+                         catch (ArgumentException e)
+                         {
+                            //process is dead
+                        }
+                     };
+                }
 
                 // Set up Ctrl-C to stop the session
                 Console.CancelKeyPress += (object s, ConsoleCancelEventArgs args) => session.Stop();
@@ -105,9 +138,9 @@ namespace EventTraceExperiments
                     {
                         processName = data.ProcessName == string.Empty ? Process.GetProcessById(data.ProcessID).ProcessName : data.ProcessName;
 
-                        
-                        Console.WriteLine(Environment.NewLine +  processName + Environment.NewLine + data.Dump());
-                   }
+
+                        Console.WriteLine(Environment.NewLine + processName + Environment.NewLine + data.Dump());
+                    }
                     catch (ArgumentException e)
                     {
                         //process is dead
