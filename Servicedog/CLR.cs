@@ -9,11 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EventTraceExperiments
+namespace Servicedog
 {
     static class CLR
     {
-        private static List<string> _ignoredTemplateTypes = new List<string>();
 
         /// <summary>
         /// Capture all raised exceptions.
@@ -21,7 +20,7 @@ namespace EventTraceExperiments
         public static void ExceptionRaised()
         {
 
-            using (var session = new TraceEventSession("CLR.ExceptionRaised"))
+            using (var session = new TraceEventSession("servicedog-clr-exceptionStart"))//TODO: define const
             {
 
                 session.EnableProvider(ClrTraceEventParser.ProviderGuid);
@@ -32,11 +31,13 @@ namespace EventTraceExperiments
                 {
                     try
                     {
-                        proccessInfo = Process.GetProcessById(data.ProcessID).ProcessName;
+                        if (string.IsNullOrEmpty(data.ProcessName))
+                            proccessInfo = Process.GetProcessById(data.ProcessID).ProcessName;
+
                         if (proccessInfo.Contains("ClientApp"))
                             Console.WriteLine(proccessInfo + " Exception Raised ");
                     }
-                    catch (ArgumentException e)
+                    catch (ArgumentException)
                     {
                         //process is dead
                     }
@@ -57,21 +58,22 @@ namespace EventTraceExperiments
         public static void ExceptionCatchStart()
         {
 
-            using (var session = new TraceEventSession("CLR.ExceptionRaised"))
+            using (var session = new TraceEventSession("servicedog-clr-exceptionCatchStart"))
             {
                 session.EnableProvider(ClrTraceEventParser.ProviderGuid);
 
 
-                var processName = string.Empty;
+                var proccessInfo = string.Empty;
                 session.Source.Clr.ExceptionCatchStart += (ExceptionHandlingTraceData data) =>
                 {
                     try
                     {
-                        processName = data.ProcessName == string.Empty ? Process.GetProcessById(data.ProcessID).ProcessName : data.ProcessName;
+                        if (string.IsNullOrEmpty(data.ProcessName))
+                            proccessInfo = Process.GetProcessById(data.ProcessID).ProcessName;
 
-                        Console.WriteLine(processName + " ExceptionCatchStart ");
+                        Console.WriteLine(proccessInfo + " ExceptionCatchStart ");
                     }
-                    catch (ArgumentException e)
+                    catch (ArgumentException)
                     {
                         //process is dead
                     }
@@ -86,9 +88,5 @@ namespace EventTraceExperiments
 
         }
 
-        private static void SetupIgnoredEvents()
-        {
-            _ignoredTemplateTypes.Add("DnsServerForInterfaceArgs");
-        }
     }
 }

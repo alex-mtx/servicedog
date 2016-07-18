@@ -1,7 +1,5 @@
 ﻿using Microsoft.Diagnostics.Tracing;
-using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Parsers.DNS;
-using Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsDNSClient;
 using Microsoft.Diagnostics.Tracing.Session;
 using System;
 using System.Collections.Generic;

@@ -45,7 +45,7 @@ namespace ClientApp
                             break;
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
 
                     Console.WriteLine("Exception raised");
@@ -70,6 +70,9 @@ namespace ClientApp
             var result = string.Empty;
             if (shouldFail)
                 url = url.Replace("testewscorporativo", "error" + DateTime.Now.Ticks.ToString());
+
+            Console.WriteLine(url);
+
             var client = new HttpClient { Timeout = new TimeSpan(0,0,3) };
             result = client.GetStringAsync(url).Result;
         }
