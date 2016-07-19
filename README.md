@@ -21,7 +21,7 @@ Our systems have some disabilities that someone else needs to address, just like
 <li>being robust. 10.000 notifications per second should demand at max 5% of one CPU.
 <li>being completely independent of serviced systems.
 <li>having some sort of notification plugins infrastructure, so other people can publish events everywhere.
-<li>initially perceiving integration problems (on DNS lookups, .net HTTP and WCF clients) and notifying them to RabbitMQ.
+<li>initially perceiving integration problems (on DNS lookups, .net HTTP and WCF clients) and notifying another tool through RabbitMQ.
 <li>must work on Windows Server 2008 and greater.
 </ul>
 
