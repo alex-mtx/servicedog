@@ -6,7 +6,7 @@ In an environment full of application tiers, where distributed applications talk
 For that matter we can count on an <a href="https://en.wikipedia.org/wiki/Application_performance_management" target="_blank">Application Performance Management - APM</a>. We have very good APM choices out there on Internet but unfortunately, for .net running in Windows, one must to pay very high costs for licences. That is why I decided to build servicedog. It will be free and opensource. Forever.
 
 <h2>What does its name mean?</h2>
-Let's start with an oficial service dog definition in the USA:
+Let's start with an official service dog definition in the USA:
 <blockquote cite="http://www.ada.gov/service_animals_2010.htm">
 Service animals are defined as dogs that are individually trained to do work or perform tasks for people with disabilities. Examples of such work or tasks include guiding people who are blind, alerting people who are deaf, pulling a wheelchair, alerting and protecting a person who is having a seizure, reminding a person with mental illness to take prescribed medications, calming a person with Post Traumatic Stress Disorder (PTSD) during an anxiety attack, or performing other duties...
 </blockquote>
