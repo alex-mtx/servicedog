@@ -13,7 +13,7 @@ Service animals are defined as dogs that are individually trained to do work or 
 Notice how this is paired with our sytems environment: usually systems have a perception that something is wrong, normally they record the problem, but they are rarely designed to adequately address such problems. 
 Our systems have some disabilities that someone else needs to address, just like a service dog does. Sometimes he just need to warn a medical center, call someone's attention or take some medicine to it´s "patient".
 
-<h2>The objectives</h2>
+<h2>Goals</h2>
 <ul>
 <li>near realtime event capturing and notifying.
 <li>servicing .net and native applications.
