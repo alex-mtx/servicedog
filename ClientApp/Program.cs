@@ -18,7 +18,7 @@ namespace ClientApp
             Console.WriteLine(Usage());
             Console.ReadLine();
             var proto = "http";
-            var parameter = "http://testewscorporativo.lanet.accorservices.net/Pedido.asmx?wsdl";
+            var parameter = "http://google.com";
             var shouldFail = "false";
             var processId = Process.GetCurrentProcess().Id;
             
@@ -62,14 +62,14 @@ namespace ClientApp
 
         private static string Usage()
         {
-            return @"[proto (http=1)] [parameter (http://testewscorporativo.lanet.accorservices.net=1)] [shouldFail (false|true)]";
+            return @"[proto (http=1)] [parameter (http://localhost=1)] [shouldFail (false|true)]";
         }
 
         private static void ExecuteHttpRequest(string url, bool shouldFail)
         {
             var result = string.Empty;
             if (shouldFail)
-                url = url.Replace("testewscorporativo", "error" + DateTime.Now.Ticks.ToString());
+                url = url.Replace("localhost", "error" + DateTime.Now.Ticks.ToString()); //need to have a new host name on every call because of the dns cache
 
             Console.WriteLine(url);
 
