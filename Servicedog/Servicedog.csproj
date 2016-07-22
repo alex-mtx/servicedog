@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TCP.cs" />
     <Compile Include="CLR.cs" />
     <Compile Include="DNS.cs" />
     <Compile Include="Program.cs" />

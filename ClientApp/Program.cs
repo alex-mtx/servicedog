@@ -18,7 +18,7 @@ namespace ClientApp
             Console.WriteLine(Usage());
             Console.ReadLine();
             var proto = "http";
-            var parameter = "http://google.com";
+            var parameter = "http://localhost";
             var shouldFail = "false";
             var processId = Process.GetCurrentProcess().Id;
             
@@ -29,7 +29,7 @@ namespace ClientApp
             while (true)
             {
                 var randomSwitch = _switch.Next(2);
-                shouldFail = randomSwitch == 1 ? "true" : "false";
+                //shouldFail = randomSwitch == 1 ? "true" : "false";
 
                 try
                 {
