@@ -1,0 +1,5 @@
+Extract a manifest (depends on perfview.exe wich is not part of windows)
+.\perfView /nogui userCommand DumpRegisteredManifest Microsoft-Windows-DNS-Client [output file name]
+
+Enable perfcounter if its missing
+lodctr C:\Windows\INF\.NETFramework\corperfmonsymbols.ini
