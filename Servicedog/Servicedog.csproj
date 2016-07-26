@@ -51,7 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StaticManifests\AFD\AFD.cs" />
     <Compile Include="TCP.cs" />
+    <Compile Include="Winsock.cs" />
     <Compile Include="CLR.cs" />
     <Compile Include="DNS.cs" />
     <Compile Include="Program.cs" />

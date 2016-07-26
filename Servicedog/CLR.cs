@@ -37,8 +37,7 @@ namespace Servicedog
                         if (proccessInfo.Contains("ClientApp"))
                             Console.WriteLine(proccessInfo + " Exception Raised ");
                     }
-                    catch (ArgumentException)
-                    {
+                    catch (ArgumentException)                    {
                         //process is dead
                     }
                 };

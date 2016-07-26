@@ -12,9 +12,11 @@ namespace Servicedog
         {
             //Task.Run(() => DNS.FailedQuery());
             //Task.Run(() => DNS.DNSTimeout());
-            Task.Run(() => CLR.ExceptionRaised());
+            //Task.Run(() => CLR.ExceptionRaised());
             //Task.Run(() => CLR.ExceptionCatchStart());
             Task.Run(() => TCP.Reconnect());
+            Task.Run(() => Winsock.Failed());
+
 
             Console.Read();
         }

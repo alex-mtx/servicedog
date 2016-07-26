@@ -3,7 +3,9 @@ using Microsoft.Diagnostics.Tracing.Session;
 using System;
 using System.Diagnostics;
 using Servicedog.Utils;
-using Servicedog.Manifests.DNS;
+using Servicedog.Manifests.Dns;
+using Servicedog.Manifests.Dns.Win2008;
+using Servicedog.Manifests.Dns.Win2012;
 
 namespace Servicedog
 {
@@ -21,12 +23,12 @@ namespace Servicedog
                 if (OSVersionChecker.IsWindows7Or2008R2())
                 {
                     Console.WriteLine("DNSWin2008en");
-                    var dns = new DNSWin2008en(session.Source);
-                    session.EnableProvider(DNSWin2008en.ProviderName, providerLevel: TraceEventLevel.Informational,
+                    var dns = new DnsWin2008Parser(session.Source);
+                    session.EnableProvider(DnsWin2008Parser.ProviderName, providerLevel: TraceEventLevel.Informational,
                         matchAnyKeywords: 0x8000000000000000);
 
                     var proccessInfo = string.Empty;
-                    dns.DnsNameError += (Manifests.DNS.Parsers.Win2008.DnsAllServersTimeoutArgs data) =>
+                    dns.DnsNameError += (Manifests.Dns.Win2008.DnsAllServersTimeoutArgs data) =>
                     {
                         try
                         {
@@ -47,12 +49,12 @@ namespace Servicedog
                 {
                     Console.WriteLine("DNSWin2012en");//TODO: remove it
 
-                    var dns = new DNSWin2012en(session.Source);
-                    session.EnableProvider(DNSWin2012en.ProviderGuid, TraceEventLevel.Informational,
+                    var dns = new DnsWin2012Parser(session.Source);
+                    session.EnableProvider(DnsWin2012Parser.ProviderGuid, TraceEventLevel.Informational,
                         matchAnyKeywords: 0x8000000000000000);
 
                     var proccessInfo = string.Empty;
-                    dns.task_03009 += (Manifests.DNS.Parsers.Win2012.task_03009Args data) =>
+                    dns.task_03009 += (Manifests.Dns.Win2012.task_03009Args data) =>
                      {
                          try
                          {
@@ -91,12 +93,12 @@ namespace Servicedog
                 if (OSVersionChecker.IsWindows7Or2008R2())
                 {
                     Console.WriteLine("DNSWin2008en");
-                    var dns = new DNSWin2008en(session.Source);
-                    session.EnableProvider(DNSWin2008en.ProviderName, providerLevel: TraceEventLevel.Informational,
+                    var dns = new DnsWin2008Parser(session.Source);
+                    session.EnableProvider(DnsWin2008Parser.ProviderName, providerLevel: TraceEventLevel.Informational,
                         matchAnyKeywords: 0x8000000000000000);
 
                     var proccessInfo = string.Empty;
-                    dns.DnsServerTimeout += (Manifests.DNS.Parsers.Win2008.DnsAllServersTimeoutArgs data) =>
+                    dns.DnsServerTimeout += (Manifests.Dns.Win2008.DnsAllServersTimeoutArgs data) =>
                     {
                         try
                         {
@@ -117,12 +119,12 @@ namespace Servicedog
                 {
                     Console.WriteLine("DNSWin2012en");
 
-                    var dns = new DNSWin2012en(session.Source);
-                    session.EnableProvider(DNSWin2012en.ProviderGuid, TraceEventLevel.Informational,
+                    var dns = new DnsWin2012Parser(session.Source);
+                    session.EnableProvider(DnsWin2012Parser.ProviderGuid, TraceEventLevel.Informational,
                         matchAnyKeywords: 0x8000000000000000 /* used by Windows Operational trace session in event viewer*/);
 
                     var proccessInfo = string.Empty;
-                    dns.DnsServerTimeout += (Manifests.DNS.Parsers.Win2012.DnsAllServersTimeoutArgs data) =>
+                    dns.DnsServerTimeout += (Manifests.Dns.Win2012.DnsAllServersTimeoutArgs data) =>
                     {
                         try
                         {

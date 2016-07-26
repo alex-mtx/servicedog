@@ -1,1 +1,0 @@
-.\perfView /nogui userCommand DumpRegisteredManifest Microsoft-Windows-DNS-Client

@@ -29,12 +29,12 @@ namespace ClientApp
             while (true)
             {
                 var randomSwitch = _switch.Next(2);
-                //shouldFail = randomSwitch == 1 ? "true" : "false";
+                shouldFail = randomSwitch == 1 ? "true" : "false";
 
                 try
                 {
 
-                    switch (proto)
+                    switch(proto)
                     {
                         case "http":
 
