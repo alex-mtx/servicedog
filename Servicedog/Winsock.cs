@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +16,12 @@ namespace Servicedog
 {
     static class Winsock
     {
+        private static ZeroMQ.ZContext _messaging;
 
+        public static void SetUp(ZeroMQ.ZContext messaging)
+        {
+            _messaging = messaging;
+        }
         /// <summary>
         /// Capture a TCP reconnect event wich indicates an unreachable destination, just like a service down or a firewall bloking the way.
         /// </summary>
@@ -29,19 +35,28 @@ namespace Servicedog
                 session.EnableProvider(WinsockAfdParser.ProviderName, TraceEventLevel.Error,  matchAnyKeywords:(ulong)0x8000000000000006);
                 var proccessInfo = string.Empty;
 
+                ulong socketId;
+                byte[] address;
+
+                //this is expected to happen before afdconnect
+                parser.AfdConnectWithAddress += (AfdConnectWithAddressConnectedArgs data) =>
+                {
+                    socketId = data.Endpoint;
+                    address = data.Address;
+                };
 
                 parser.AfdConnect += (AfdCloseClosedArgs data) =>
                 {
+                    if (data.Level != TraceEventLevel.Error)
+                        return;
                     try
                     {
                         if (string.IsNullOrEmpty(data.ProcessName))
                             proccessInfo = Process.GetProcessById(data.ProcessID).ProcessName;
-                        //TODO: get address in IP format: 
-                        //http://stackoverflow.com/questions/1904160/getting-the-ip-address-of-a-remote-socket-endpoint
                         Console.WriteLine(data.Dump());
-                            //Console.WriteLine("Winsock 11 " + proccessInfo + " failed on " + data.Dump + ":" +data.dport);
+
                     }
-                    catch (ArgumentException)
+                    catch (ArgumentException e)
                     {
                         //process is dead
                     }

@@ -16,7 +16,7 @@ namespace Servicedog
     {
 
         /// <summary>
-        /// Capture a TCP reconnect event wich indicates an unreachable destination, just like a service down or a firewall bloking the way.
+        /// Capture a TCP reconnect event wich indicates an unreachable destination, just like a service down or a firewall blocking the way.
         /// </summary>
         public static void Reconnect()
         {
