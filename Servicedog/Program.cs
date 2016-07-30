@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using ZeroMQ;
 
 namespace Servicedog
 {
@@ -11,41 +12,21 @@ namespace Servicedog
     {
         static void Main(string[] args)
         {
-            //Task.Run(() => DNS.FailedQuery());
-            //Task.Run(() => DNS.DNSTimeout());
-            //Task.Run(() => CLR.ExceptionRaised());
-            //Task.Run(() => CLR.ExceptionCatchStart());
-            //Task.Run(() => TCP.Reconnect());
-            Task.Run(() => Winsock.Failed());
+            var queue = "inproc://events";
+            using (var context = new ZContext()) { 
 
+                //Task.Run(() => DNS.FailedQuery());
+                //Task.Run(() => DNS.DNSTimeout());
+                //Task.Run(() => CLR.ExceptionRaised());
+                //Task.Run(() => CLR.ExceptionCatchStart());
+                //Task.Run(() => TCP.Reconnect());
+                Task.Run(() => Winsock.Capture(context)).Wait(1000); //wait for the zmq socket creation 
+                Task.Run(() => SimpleDispatcher.Start(context, queue, Winsock.Connect));
+                Task.Run(() => SimpleDispatcher.Start(context, queue, Winsock.ErrorOnConnect));
+                Console.Read();
 
-            Console.Read();
-        }
-
-        private static void SetUpMessaging()
-        {
-            using (var context = new ZContext())
-            using (var subscriber = new ZSocket(context, ZSocketType.XSUB))
-            using (var publisher = new ZSocket(context, ZSocketType.XPUB))
-            using (var listener = new ZSocket(context, ZSocketType.PAIR))
-            {
-                new Thread(() => Espresso_Publisher(context)).Start();
-                new Thread(() => Espresso_Subscriber(context)).Start();
-                new Thread(() => Espresso_Listener(context)).Start();
-
-                subscriber.Connect("tcp://127.0.0.1:6000");
-                publisher.Bind("tcp://*:6001");
-                listener.Bind("inproc://listener");
-
-                ZError error;
-                if (!ZContext.Proxy(subscriber, publisher, listener, out error))
-                {
-                    if (error == ZError.ETERM)
-                        return; // Interrupted
-                    throw new ZException(error);
-                }
             }
         }
-       
+
     }
 }

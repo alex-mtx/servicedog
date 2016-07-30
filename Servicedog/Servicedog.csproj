@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SimpleDispatcher.cs" />
     <Compile Include="StaticManifests\AFD\AFD.cs" />
     <Compile Include="TCP.cs" />
     <Compile Include="Winsock.cs" />
