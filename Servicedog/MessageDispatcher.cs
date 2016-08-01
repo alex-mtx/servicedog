@@ -8,9 +8,28 @@ using ZeroMQ;
 
 namespace Servicedog
 {
-    static class SimpleDispatcher
+    public class MessageDispatcher: IDispatcher
     {
-        public static void Start(ZContext ctx,string queueAddress,string routingKey)
+        private ZSocket _sock;
+
+        public MessageDispatcher()
+        {
+            var middleware = ZeroMiddleware.Instace;
+            _sock = middleware.Publisher;
+        }
+
+        public void Send(string body, string routingKey/*, Type type*/)
+        {
+            using (var message = new ZMessage())//HACK: can we reuse instance between events?
+            {
+                message.Add(new ZFrame(routingKey)); //envelope
+                message.Add(new ZFrame(body));//body
+                //message.Add(new ZFrame(type.FullName));//deserialization info
+                _sock.Send(message);
+            }
+        }
+
+        public void Start(ZContext ctx,string queueAddress,string routingKey)
         {
             using (var subscriber = new ZSocket( ctx, ZSocketType.SUB))
             {
@@ -39,5 +58,10 @@ namespace Servicedog
                 }
             }
         }
+        public void Dispatch(byte[] content,Type type)
+        {
+
+        }
+
     }
 }

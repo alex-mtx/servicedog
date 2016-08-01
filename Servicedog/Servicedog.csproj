@@ -49,13 +49,23 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Topshelf, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Topshelf.4.0.1\lib\net452\Topshelf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ZeroMQ, Version=4.1.0.21, Culture=neutral, PublicKeyToken=4a9630883fd6c563, processorArchitecture=MSIL">
       <HintPath>..\packages\ZeroMQ.4.1.0.21\lib\net40\ZeroMQ.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SimpleDispatcher.cs" />
+    <Compile Include="IDispatcher.cs" />
+    <Compile Include="IMessageReceiver.cs" />
+    <Compile Include="MessageReceiver.cs" />
+    <Compile Include="ServiceRunner.cs" />
+    <Compile Include="WinsockAnalyser.cs" />
+    <Compile Include="ZeroMiddleware.cs" />
+    <Compile Include="MessageDispatcher.cs" />
     <Compile Include="StaticManifests\AFD\AFD.cs" />
     <Compile Include="TCP.cs" />
     <Compile Include="Winsock.cs" />

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Diagnostics.Tracing;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -46,7 +47,5 @@ namespace Servicedog.Utils
 
             return sb.ToString();
         }
-
-     
     }
 }

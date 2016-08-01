@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Topshelf;
 using ZeroMQ;
 
 namespace Servicedog
@@ -12,20 +13,21 @@ namespace Servicedog
     {
         static void Main(string[] args)
         {
-            var queue = "inproc://events";
-            using (var context = new ZContext()) { 
 
-                //Task.Run(() => DNS.FailedQuery());
-                //Task.Run(() => DNS.DNSTimeout());
-                //Task.Run(() => CLR.ExceptionRaised());
-                //Task.Run(() => CLR.ExceptionCatchStart());
-                //Task.Run(() => TCP.Reconnect());
-                Task.Run(() => Winsock.Capture(context)).Wait(1000); //wait for the zmq socket creation 
-                Task.Run(() => SimpleDispatcher.Start(context, queue, Winsock.Connect));
-                Task.Run(() => SimpleDispatcher.Start(context, queue, Winsock.ErrorOnConnect));
-                Console.Read();
+            HostFactory.New(x =>
+            {
+                x.SetServiceName("servicedog");
+                x.SetDescription("Captures and analyses problems that interfere on the communications between local and remote applications.");
+                x.Service<ServiceRunner>(sc =>
+                {
+                    sc.ConstructUsing(() => new ServiceRunner());
+                    sc.WhenStarted(s => s.Start());
+                    sc.WhenStopped(s => s.Stop());
+                    sc.WhenShutdown(s => s.Shutdown());
+                });
 
-            }
+            });
+
         }
 
     }
