@@ -2,6 +2,6 @@
 {
     public interface IDispatcher
     {
-        void Send(object body, string routingKey);
+        void Send(string body, string routingKey);
     }
 }
