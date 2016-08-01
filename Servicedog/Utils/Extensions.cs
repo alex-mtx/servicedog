@@ -51,7 +51,7 @@ namespace Servicedog.Utils
             return sb.ToString();
         }
 
-        public static string ToJson( TraceEvent data,Type type)
+        public static string ToJSON( TraceEvent data,Type type)
         {
             //TODO: implement the faster way
             //faster way
