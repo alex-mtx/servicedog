@@ -26,7 +26,7 @@ namespace Servicedog
             var cancellation = _cancelTasks.Token;
             Task.Run(() => new Winsock(new MessageDispatcher()).Capture(cancellation), cancellation);
 
-            Task.Run(() => new WinsockAnalyser(new MessageReceiver(Winsock.ERROR_ON_CONNET)).Analyse(cancellation));
+            Task.Run(() => new WinsockAnalyser(new MessageReceiver(new []{ Winsock.ERROR_ON_CONNECT, Winsock.CONNECT,Winsock.ABORT })).Analyse(cancellation));
 
             return true;
         }

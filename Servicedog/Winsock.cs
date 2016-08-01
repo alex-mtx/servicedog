@@ -13,10 +13,10 @@ namespace Servicedog
         public const string SessionName = "servicedog-winsock-afd";
         public const string ABORT = "winsock_abort";
         public const string CONNECT = "winsock_connect";
-        public const string ERROR_ON_CONNET = "winsock_error_on_connect";
+        public const string ERROR_ON_CONNECT = "winsock_error_on_connect";
         private IDispatcher _sender;
 
-        public Winsock(IDispatcher sender)//TODO: get via DI, so we can have simpler unit testing
+        public Winsock(IDispatcher sender)//TODO: get via DI, so we can have simpler impl and tests
         {
             _sender = new MessageDispatcher();
         }
@@ -48,13 +48,12 @@ namespace Servicedog
                         return;
                     try
                     {
-                        _sender.Send(data.ToXml(new StringBuilder()).ToString(), ERROR_ON_CONNET);
+                        _sender.Send(data.ToXml(new StringBuilder()).ToString(), ERROR_ON_CONNECT);
                     }
-
                     catch (Exception e)
                     {
                             //now something really bad went on
-                        }
+                    }
                 };
 
                 //TODO: verify whether ipv6 should be implemented
@@ -72,10 +71,6 @@ namespace Servicedog
                 //        //process is dead
                 //    }
                 //};
-
-
-                // Set up Ctrl-C to stop the session
-                Console.CancelKeyPress += (object s, ConsoleCancelEventArgs args) => session.Stop();
 
                 cancellation.Register(() => session.Stop());
 

@@ -13,12 +13,12 @@ namespace Servicedog
     /// Below implementation depends on Operating System version, since provider has evolved between them.
     /// <see cref="https://technet.microsoft.com/en-us/library/dn305896(v=ws.11).aspx"/>
     /// </summary>
-    static class DNS
+    public class DNS
     {
         public static void FailedQuery()
         {
 
-            using (var session = new TraceEventSession("servicedog-dns-dnsNameError"))//TODO: remove it
+            using (var session = new TraceEventSession("servicedog-dns"))//TODO: remove it
             {
                 if (OSVersionChecker.IsWindows7Or2008R2())
                 {

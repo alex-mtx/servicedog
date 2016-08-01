@@ -30,11 +30,9 @@ namespace Servicedog
         {
             get
             {
-                //avoiding unnecessary locks
-                if (initialized) return instance;
-
                 lock (syncRoot)
                 {
+                    if (initialized) return instance;
                     instance = new ZeroMiddleware();
                     return instance;
                 }
@@ -47,6 +45,7 @@ namespace Servicedog
         }
         public ZSocket CreateConsumer(ICollection<string> routingKeys)
         {
+
             if (routingKeys == null)
                 routingKeys = new List<string>();
 
@@ -59,6 +58,7 @@ namespace Servicedog
             }
 
             _subscribers.Add(subscriber);
+
             return subscriber;
         }
 

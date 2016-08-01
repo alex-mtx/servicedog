@@ -15,18 +15,16 @@ namespace ClientApp
         static void Main(string[] args)
         {
 
-            Console.WriteLine(Usage());
-            Console.ReadLine();
-            var proto = "http";
+            var cmd = Console.ReadLine();
             var parameter = "http://localhost";
             var shouldFail = "false";
             var processId = Process.GetCurrentProcess().Id;
             
 
 
-            Console.WriteLine(processId);
-
-            while (true)
+            Console.WriteLine(processId + " " + cmd);
+            var go = true;
+            while (go)
             {
                 var randomSwitch = _switch.Next(2);
                 shouldFail = randomSwitch == 1 ? "true" : "false";
@@ -34,12 +32,17 @@ namespace ClientApp
                 try
                 {
 
-                    switch(proto)
+                    switch(cmd)
                     {
                         case "http":
 
                             ExecuteHttpRequest(parameter, bool.Parse(shouldFail));
                             Console.WriteLine("http request ok");
+                            break;
+
+                        case "tcpf":
+                            MultipleFailureTelnet();
+                            go=false;
                             break;
                         default:
                             break;
@@ -54,17 +57,13 @@ namespace ClientApp
 
                 Thread.Sleep(1000);
             }
-
-
+            Console.WriteLine("crtl+c");
+            Console.Read();
         }
 
 
 
-        private static string Usage()
-        {
-            return @"[proto (http=1)] [parameter (http://localhost=1)] [shouldFail (false|true)]";
-        }
-
+       
         private static void ExecuteHttpRequest(string url, bool shouldFail)
         {
             var result = string.Empty;
@@ -77,6 +76,27 @@ namespace ClientApp
             result = client.GetStringAsync(url).Result;
         }
 
+        private static void MultipleFailureTelnet()
+        {
+            //TODO: get this working... shame on me :-(
+            Console.WriteLine("telnet");
+            Parallel.For(0, 10000, delegate(int it) 
+            {
+                ProcessStartInfo proc =
+                new ProcessStartInfo(@"c:\windows\system32\telnet.exe", "localhost 99");
+                proc.CreateNoWindow = true;
+                proc.UseShellExecute = true;
+                try
+                {
+                    Process.Start(proc);
+                }catch (Exception e)
+                {
+                    Console.WriteLine("Error detected. are you an admin?");
+                    Console.WriteLine(e);
+                    throw;
+                }
+            });
+        }
 
     }
 }

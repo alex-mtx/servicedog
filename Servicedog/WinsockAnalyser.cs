@@ -19,7 +19,7 @@ namespace Servicedog
 
         public void Analyse(CancellationToken cancel)
         {
-            while (cancel.IsCancellationRequested)
+            while (!cancel.IsCancellationRequested)
             {
                 Tuple<string, string> message = _receiver.NextMessage();
                 Console.WriteLine(message.ToString());

@@ -1,7 +1,10 @@
 ﻿using Microsoft.Diagnostics.Tracing;
+using Newtonsoft.Json;
+using Servicedog.Manifests.Afd;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Management;
 using System.Text;
@@ -9,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace Servicedog.Utils
 {
-   public static class StringExtensions
+    public static class StringExtensions
     {
-       public  static bool ContainsAny(this string str, List<string> strings)
+        public static bool ContainsAny(this string str, List<string> strings)
         {
             foreach (var item in strings)
             {
@@ -46,6 +49,31 @@ namespace Servicedog.Utils
             }
 
             return sb.ToString();
+        }
+
+        public static string ToJson( TraceEvent data,Type type)
+        {
+            //TODO: implement the faster way
+            //faster way
+            //http://www.newtonsoft.com/json/help/html/ReadingWritingJSON.htm
+            //StringWriter sw = new StringWriter();
+            //using (JsonTextWriter writer = new JsonTextWriter(sw))
+            //{
+            //    //{
+            //    writer.WriteStartObject();
+            //    writer.WritePropertyName("processId");
+            //    writer.WriteValue(data.ProcessID);
+
+            //    //...
+            //    writer.WriteEndObject();
+            //    return sw.ToString();
+            //}
+
+            //faster implementation
+
+            return JsonConvert.SerializeObject(data,type,new JsonSerializerSettings());
+
+
         }
     }
 }
