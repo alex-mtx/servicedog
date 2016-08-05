@@ -5,7 +5,7 @@ namespace Servicedog.Messaging
 {
     public interface IReceiver
     {
-        Tuple<int,string, string> NextMessage();
+        Message NextMessage();
         void AddRoutingKey(string routingKey);
         void AddRoutingKeys(IEnumerable<string> routingKeys);
     }

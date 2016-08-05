@@ -66,6 +66,7 @@
     <Compile Include="Analysers\Analyser.cs" />
     <Compile Include="Messaging\IDispatcher.cs" />
     <Compile Include="Messaging\IReceiver.cs" />
+    <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\Receivers\MessageReceiver.cs" />
     <Compile Include="ServiceRunner.cs" />
     <Compile Include="Analysers\NetworkAnalyser.cs" />

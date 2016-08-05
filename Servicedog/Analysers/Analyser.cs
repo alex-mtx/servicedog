@@ -11,6 +11,7 @@ namespace Servicedog.Analysers
     public abstract class Analyser
     {
         protected IReceiver _receiver;
+        protected Message _message;
 
         public Analyser(IReceiver receiver)
         {
@@ -31,8 +32,8 @@ namespace Servicedog.Analysers
                 {
                     while (true)
                     {
-                        Tuple<int,string, string> message = _receiver.NextMessage();//this is a blocking call
-                        Analyse(message);
+                        _message = _receiver.NextMessage();//this is a blocking call
+                        Analyse(_message);
                     }
                 }, cancel);
             }
@@ -47,7 +48,7 @@ namespace Servicedog.Analysers
             }
         }
 
-        public abstract void Analyse(Tuple<int,string, string> message);
+        public abstract void Analyse(Message message);
         public abstract IEnumerable<string> PrefixesToSubscribeTo();
     }
 }

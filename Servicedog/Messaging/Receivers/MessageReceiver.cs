@@ -32,15 +32,17 @@ namespace Servicedog.Messaging.Receivers
 
         }
 
-        public Tuple<int,string, string> NextMessage()
+        public Message NextMessage()
         {
 
             _currentMessage = _queue.ReceiveMessage();//HACK: need to reuse ZMessage to save resources
 
-            return new Tuple<int, string, string>(
-                        _currentMessage[PROCESS_ID_POSITION].ReadInt32(),
-                        _currentMessage[BODY_POSITION].ReadString(),
-                        _currentMessage[ROUTING_KEY_POSITION].ReadString());
+            return new Message
+            {
+                ProcessId = _currentMessage[PROCESS_ID_POSITION].ReadInt32(),
+                Body = _currentMessage[BODY_POSITION].ReadString(),
+                RoutingKey = _currentMessage[ROUTING_KEY_POSITION].ReadString()
+            };
 
         }
 

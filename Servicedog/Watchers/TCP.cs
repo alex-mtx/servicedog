@@ -2,7 +2,9 @@
 using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using Microsoft.Diagnostics.Tracing.Session;
 using Servicedog.Messaging;
+using Servicedog.Utils;
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Servicedog.Watchers
@@ -35,7 +37,8 @@ namespace Servicedog.Watchers
             {
                 try
                 {
-                    //should we create a model, json, schema,...? for now, let´s keep it as simple as possible.
+                    var process = Process.GetProcessById(data.ProcessID).GetInfoFromWMI();
+                    //should we create a model, json, schema,...? for now, let´s keep it as simple and as fast as possible.
                     _sender.Send(data.ProcessID, data.ProcessID + " " + data.daddr + ":" + data.dport, TCP_RECONNECT);
                 }
                 catch (Exception)
