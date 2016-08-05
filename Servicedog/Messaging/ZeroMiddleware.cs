@@ -5,18 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using ZeroMQ;
 
-namespace Servicedog
+namespace Servicedog.Messaging
 {
     public class ZeroMiddleware : IDisposable
     {
         private static volatile ZeroMiddleware instance;
-        public  ZContext Queue { get; private set; }
+        public ZContext Queue { get; private set; }
         private static object syncRoot = new object();
         private static volatile bool initialized;
         private static string _queueAddress = "inproc://events";
         public ZSocket Publisher { get; private set; }
         private List<ZSocket> _subscribers = new List<ZSocket>();
-        
+
 
         private ZeroMiddleware()
         {
@@ -40,29 +40,46 @@ namespace Servicedog
         }
         public ZSocket CreateConsumer(string routingKey)
         {
-            var keys = new string[] { routingKey };
-            return CreateConsumer(keys);
-        }
-        public ZSocket CreateConsumer(ICollection<string> routingKeys)
-        {
-
-            if (routingKeys == null)
-                routingKeys = new List<string>();
-
-            var subscriber = new ZSocket(Queue, ZSocketType.SUB);
-            subscriber.Connect(_queueAddress);
-
-            foreach (var key in routingKeys)
-            {
-                subscriber.Subscribe(key);
-            }
-
-            _subscribers.Add(subscriber);
+            var subscriber = NewConsumer();
+            if (!string.IsNullOrEmpty(routingKey))
+                subscriber.Subscribe(routingKey);
 
             return subscriber;
         }
 
+        /// <summary>
+        /// Use it when you need to define your subscription in another step.
+        /// </summary>
+        /// <returns></returns>
+        public ZSocket CreateConsumer()
+        {
+            return NewConsumer();
+        }
 
+        /// <summary>
+        /// Subscribes to all keys present is the <paramref name="routingKeys"/>
+        /// When <paramref name="routingKeys"/> is null, you'll be 
+        /// </summary>
+        /// <param name="routingKeys"></param>
+        /// <returns></returns>
+        public ZSocket CreateConsumer(ICollection<string> routingKeys)
+        {
+            if (routingKeys == null)
+                routingKeys = new List<string>();
+            var subscriber = NewConsumer();
+            foreach (var key in routingKeys)
+                subscriber.Subscribe(key);
+            return subscriber;
+        }
+        //call it before calling ZSocket.Subscribe, 
+        //otherwise your subscription won't take any effect.
+        private ZSocket NewConsumer()
+        {
+            var subscriber = new ZSocket(Queue, ZSocketType.SUB);
+            subscriber.Connect(_queueAddress);
+            _subscribers.Add(subscriber);
+            return subscriber;
+        }
 
         public void Dispose()
         {

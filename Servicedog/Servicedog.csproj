@@ -63,18 +63,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IDispatcher.cs" />
-    <Compile Include="IMessageReceiver.cs" />
-    <Compile Include="MessageReceiver.cs" />
+    <Compile Include="Analysers\Analyser.cs" />
+    <Compile Include="Messaging\IDispatcher.cs" />
+    <Compile Include="Messaging\IReceiver.cs" />
+    <Compile Include="Messaging\Receivers\MessageReceiver.cs" />
     <Compile Include="ServiceRunner.cs" />
-    <Compile Include="WinsockAnalyser.cs" />
-    <Compile Include="ZeroMiddleware.cs" />
-    <Compile Include="MessageDispatcher.cs" />
+    <Compile Include="Analysers\NetworkAnalyser.cs" />
+    <Compile Include="Messaging\ZeroMiddleware.cs" />
+    <Compile Include="Messaging\Dispatchers\MessageDispatcher.cs" />
     <Compile Include="StaticManifests\AFD\AFD.cs" />
-    <Compile Include="TCP.cs" />
-    <Compile Include="Winsock.cs" />
-    <Compile Include="CLR.cs" />
-    <Compile Include="DNS.cs" />
+    <Compile Include="Watchers\TCP.cs" />
+    <Compile Include="Watchers\Watcher.cs" />
+    <Compile Include="Watchers\Winsock.cs" />
+    <Compile Include="Watchers\CLR.cs" />
+    <Compile Include="Watchers\DNS.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StaticManifests\DNS\DNS2008en.cs" />
@@ -86,6 +88,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Diagnostics.Tracing.TraceEvent.1.0.41\build\Microsoft.Diagnostics.Tracing.TraceEvent.targets" Condition="Exists('..\packages\Microsoft.Diagnostics.Tracing.TraceEvent.1.0.41\build\Microsoft.Diagnostics.Tracing.TraceEvent.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

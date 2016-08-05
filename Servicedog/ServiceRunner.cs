@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Servicedog.Analysers;
+using Servicedog.Messaging.Dispatchers;
+using Servicedog.Messaging.Receivers;
+using Servicedog.Watchers;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,12 +25,23 @@ namespace Servicedog
 
         }
 
-        public bool Start()
+        public bool Start()//TODO: need do simplify all these instaces...
         {
-            var cancellation = _cancelTasks.Token;
-            Task.Run(() => new Winsock(new MessageDispatcher()).Capture(cancellation), cancellation);
+            var dispatcher = new MessageDispatcher();
 
-            Task.Run(() => new WinsockAnalyser(new MessageReceiver(new []{ Winsock.ERROR_ON_CONNECT, Winsock.CONNECT,Winsock.ABORT })).Analyse(cancellation));
+            var cancellation = _cancelTasks.Token;
+
+            //TODO: need a better design here..
+            new DNS(dispatcher)
+                .StartWatching(cancellation);
+
+            new TCP(dispatcher)
+                .StartWatching(cancellation);
+
+
+            //and here too
+            new NetworkAnalyser(new MessageReceiver())
+                .StartAnalysing(cancellation);
 
             return true;
         }
