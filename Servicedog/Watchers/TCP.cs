@@ -37,9 +37,17 @@ namespace Servicedog.Watchers
             {
                 try
                 {
-                    var process = Process.GetProcessById(data.ProcessID).GetInfoFromWMI();
+                    //var process = Process.GetProcessById(data.ProcessID).GetInfoFromWMI();
                     //should we create a model, json, schema,...? for now, let´s keep it as simple and as fast as possible.
                     _sender.Send(data.ProcessID, data.ProcessID + " " + data.daddr + ":" + data.dport, TCP_RECONNECT);
+                }
+
+                //GetProcessById
+                catch (ArgumentException e)
+                {
+                    //the process is not running but we should send the error over
+                    _sender.Send(data.ProcessID, data.ProcessID + " " + data.daddr + ":" + data.dport, TCP_RECONNECT);
+
                 }
                 catch (Exception)
                 {

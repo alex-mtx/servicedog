@@ -26,29 +26,36 @@ namespace Servicedog.Utils
 
         public static string GetInfoFromWMI(this Process current)
         {
-            string query = "Select * From Win32_Process Where ProcessID = " + current.Id;
-            StringBuilder sb = new StringBuilder();
-
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
-            ManagementObjectCollection processList = searcher.Get();
-
-            foreach (ManagementObject obj in processList)
+            try
             {
-                sb.Append(obj.GetPropertyValue("Name"));
+                string query = "Select * From Win32_Process Where ProcessID = " + current.Id;
+                StringBuilder sb = new StringBuilder();
 
-                string[] argList = new string[] { string.Empty, string.Empty };
-                int returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", argList));
-                if (returnVal == 0)
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
+                ManagementObjectCollection processList = searcher.Get();
+
+                foreach (ManagementObject obj in processList)
                 {
-                    // return DOMAIN\user
-                    sb.AppendFormat(" user: {0} ", argList[1] + "\\" + argList[0]);
+                    sb.Append(obj.GetPropertyValue("Name"));
+
+                    string[] argList = new string[] { string.Empty, string.Empty };
+                    int returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", argList));
+                    if (returnVal == 0)
+                    {
+                        // return DOMAIN\user
+                        sb.AppendFormat(" user: {0} ", argList[1] + "\\" + argList[0]);
+                    }
+
+                    sb.AppendFormat(" cmd: {0} ", obj.GetPropertyValue("CommandLine"));
+
                 }
 
-                sb.AppendFormat(" cmd: {0} ", obj.GetPropertyValue("CommandLine"));
-
+                return sb.ToString();
             }
-
-            return sb.ToString();
+            catch (Exception e)
+            {
+                return "dead proccess";
+            }
         }
 
         public static string ToJSON( TraceEvent data,Type type)

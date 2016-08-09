@@ -18,7 +18,7 @@ namespace Servicedog.Watchers
         }
 
         /// <summary>
-        /// Captures desired events and publish them in an async intenal queue.
+        /// Captures desired events and publish them in an async internal queue.
         /// <para>The trace session runs in another thread.</para>
         /// </summary>
         public void StartWatching(CancellationToken cancellation)
@@ -31,12 +31,10 @@ namespace Servicedog.Watchers
 
                         using (var session = new TraceEventSession(SessionName()))
                         {
-
                             Capture(session);
-
                             cancellation.Register(() => session.Stop(true));
                             session.Source.Process();   // Listen (forever) for events
-                }
+                        }
                     }, cancellation);
             }
             catch (TaskCanceledException)
