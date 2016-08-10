@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Text;
@@ -19,45 +20,67 @@ namespace Servicedog.Utils
         public ProcessTable()
         {
             this.Query.QueryString = WMI_OPER_EVENT_QUERY;
-            this.EventArrived += new EventArrivedEventHandler(watcher_EventArrived);
-            Maintenance();
         }
+
+        public void Init()
+        {
+            InitializeTableFromWMI();
+            this.EventArrived += new EventArrivedEventHandler(watcher_EventArrived);
+        }
+
+        public ProcessInfo Get(int id)
+        {
+            var process = new ProcessInfo();
+            _table.TryGetValue( (uint)id, out process);
+
+            return process;
+        }
+
 
         private void watcher_EventArrived(object sender, EventArrivedEventArgs e)
         {
             string eventType = e.NewEvent.ClassPath.ClassName;
-            ProcessInfo proc = new
-                Win32_Process(e.NewEvent["TargetInstance"] as ManagementBaseObject);
+            ProcessInfo process = Convert(e.NewEvent["TargetInstance"] as ManagementObject);
+            if (process == null)
+                return;
 
             switch (eventType)
             {
                 case CREATION:
-                    if (ProcessCreated != null) ProcessCreated(proc); break;
+                    ProcessCreated(process);
+                    break;
                 case DELETION:
-                    if (ProcessDeleted != null) ProcessDeleted(proc); break;
+                    ProcessDeleted(process);
+                    break;
                 case MODIFICATION:
-                    if (ProcessModified != null) ProcessModified(proc); break;
+                    ProcessModified(process);
+                    break;
             }
         }
-        private void Maintenance()
+
+        private void ProcessModified(ProcessInfo process)
         {
-            foreach(var process in Listen(CREATION))
-            {
-                if (obj.GetPropertyValue("Name").ToString() == "System Idle Process")
-                    continue;
+            Debug.WriteLine(process);
 
-                if (obj["ProcessId"] == null)//can ever happen? 
-                    continue;
-
-                _table[process.ProcessId] = process;
-            }
-
-            foreach (var process in Listen(DELETION))
-            {
-                _table[process.ProcessId].TerminationDate = DateTime.Now;//hazardows, I know. TODO: check for null
-            }
+            if (_table.ContainsKey(process.ProcessId))
+                Console.WriteLine("ProcessModified");
         }
 
+        private void ProcessDeleted(ProcessInfo process)
+        {
+            Debug.WriteLine(process);
+            if (_table.ContainsKey(process.ProcessId))
+                _table[process.ProcessId].TerminationDate = process.TerminationDate;
+        }
+
+
+        private void ProcessCreated(ProcessInfo process)
+        {
+            Debug.WriteLine(process);
+            _table[process.ProcessId] = process;
+        }
+
+        
         private void InitializeTableFromWMI()
         {
             try
@@ -70,10 +93,8 @@ namespace Servicedog.Utils
 
                 foreach (ManagementObject obj in processList)
                 {
-
-                    
-
-                    _table[process.ProcessId] = process;
+                    var process = Convert(obj);
+                    _table[process.ProcessId] = process; 
                 }
 
             }
@@ -246,6 +267,11 @@ namespace Servicedog.Utils
                     return false;
                 return DateTime.Now.Subtract(TerminationDate.Value).TotalSeconds > 30;
             }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{\"id\":{0},\"name\":\"{1}\",\"path\":\"{2}\"",ProcessId,Name,ExecutablePath);
         }
 
     }

@@ -30,6 +30,7 @@ namespace Servicedog
         {
             var dispatcher = new MessageDispatcher();
             var processtable = new ProcessTable();
+            processtable.Init();
 
             var cancellation = _cancelTasks.Token;
 
@@ -40,8 +41,8 @@ namespace Servicedog
             new TCP(dispatcher)
                 .StartWatching(cancellation);
 
-            new Process(dispatcher)
-                .StartWatching(cancellation);
+            //new Process(dispatcher)
+            //    .StartWatching(cancellation);
 
             //and here too
             new NetworkAnalyser(new MessageReceiver())

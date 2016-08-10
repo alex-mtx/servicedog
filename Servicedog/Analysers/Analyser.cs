@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Servicedog.Utils;
 
 namespace Servicedog.Analysers
 {
@@ -16,6 +17,7 @@ namespace Servicedog.Analysers
         public Analyser(IReceiver receiver)
         {
             _receiver = receiver;
+            
         }
         
         /// <summary>

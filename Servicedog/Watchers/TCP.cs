@@ -6,6 +6,7 @@ using Servicedog.Utils;
 using System;
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.Diagnostics.Tracing.Etlx;
 
 namespace Servicedog.Watchers
 {
@@ -30,32 +31,29 @@ namespace Servicedog.Watchers
         {
             session.EnableKernelProvider(KernelTraceEventParser.Keywords.NetworkTCPIP, KernelTraceEventParser.Keywords.NetworkTCPIP);
 
-            //two events in a row for same process and IP/port means failure. 
-            //It could be a firewall intervention, silently droping packets to that destination
-            //or the end service is down. 
-            session.Source.Kernel.TcpIpReconnect += (TcpIpTraceData data) =>
+            //TraceLogEventSource is required on win 7
+            //see: https://github.com/Microsoft/dotnetsamples/blob/master/Microsoft.Diagnostics.Tracing/TraceEvent/TraceEvent/41_TraceLogMonitor.cs
+            using (TraceLogEventSource traceLogSource = TraceLog.CreateFromTraceEventSession(session))
             {
-                try
-                {
-                    //var process = Process.GetProcessById(data.ProcessID).GetInfoFromWMI();
-                    //should we create a model, json, schema,...? for now, let´s keep it as simple and as fast as possible.
-                    _sender.Send(data.ProcessID, data.ProcessID + " " + data.daddr + ":" + data.dport, TCP_RECONNECT);
-                }
 
-                //GetProcessById
-                catch (ArgumentException e)
+                //two events in a row for same process and IP/port means failure. 
+                //It could be a firewall intervention, silently droping packets to that destination
+                //or the end service is down. 
+                traceLogSource.Kernel.TcpIpReconnect += (TcpIpTraceData data) =>
                 {
-                    //the process is not running but we should send the error over
-                    _sender.Send(data.ProcessID, data.ProcessID + " " + data.daddr + ":" + data.dport, TCP_RECONNECT);
-
-                }
-                catch (Exception)
-                {
+                    try
+                    {
+                    _sender.Send(data.ProcessID, data.daddr + ":" + data.dport, TCP_RECONNECT);
+                    }
+                    catch (Exception)
+                    {
                     //TODO: log it
                     //TODO: check all Exceptions that can be thrown by the _sender instance.
                     throw;
-                }
-            };
+                    }
+                };
+                traceLogSource.Process();
+            }
         }
     }
 }

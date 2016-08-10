@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Servicedog.Utils;
 using ZeroMQ;
 
 namespace Servicedog.Messaging.Receivers
@@ -14,10 +15,16 @@ namespace Servicedog.Messaging.Receivers
         private const int ROUTING_KEY_POSITION = 0;
         private const int PROCESS_ID_POSITION = 1;
         private const int BODY_POSITION = 2;
+        protected ProcessTable _processes;
+
 
         public MessageReceiver()
         {
             _queue = ZeroMiddleware.Instace.CreateConsumer();
+            _processes = new ProcessTable();
+            _processes.Init();
+
+
         }
         public MessageReceiver(ICollection<string> routingKeys)
         {
@@ -34,11 +41,11 @@ namespace Servicedog.Messaging.Receivers
 
         public Message NextMessage()
         {
-
             _currentMessage = _queue.ReceiveMessage();//HACK: need to reuse ZMessage to save resources
 
             return new Message
             {
+                Process = _processes.Get(_currentMessage[PROCESS_ID_POSITION].ReadInt32()),
                 ProcessId = _currentMessage[PROCESS_ID_POSITION].ReadInt32(),
                 Body = _currentMessage[BODY_POSITION].ReadString(),
                 RoutingKey = _currentMessage[ROUTING_KEY_POSITION].ReadString()

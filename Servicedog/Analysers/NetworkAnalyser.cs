@@ -33,7 +33,7 @@ namespace Servicedog.Analysers
                     //TODO: log
                     break;
 
-        }
+            }
 
             Console.WriteLine(message.ToJson());
         }
