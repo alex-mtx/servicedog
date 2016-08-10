@@ -32,7 +32,7 @@ namespace Servicedog.Watchers
                     try
                     {
                         if (string.IsNullOrEmpty(data.ProcessName))
-                            proccessInfo = Process.GetProcessById(data.ProcessID).ProcessName;
+                            proccessInfo = System.Diagnostics.Process.GetProcessById(data.ProcessID).ProcessName;
 
                         if (proccessInfo.Contains("ClientApp"))
                             Console.WriteLine(proccessInfo + " Exception Raised ");
@@ -68,7 +68,7 @@ namespace Servicedog.Watchers
                     try
                     {
                         if (string.IsNullOrEmpty(data.ProcessName))
-                            proccessInfo = Process.GetProcessById(data.ProcessID).ProcessName;
+                            proccessInfo = System.Diagnostics.Process.GetProcessById(data.ProcessID).ProcessName;
 
                         Console.WriteLine(proccessInfo + " ExceptionCatchStart ");
                     }

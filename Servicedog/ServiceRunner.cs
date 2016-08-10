@@ -1,6 +1,7 @@
 ﻿using Servicedog.Analysers;
 using Servicedog.Messaging.Dispatchers;
 using Servicedog.Messaging.Receivers;
+using Servicedog.Utils;
 using Servicedog.Watchers;
 using System;
 using System.Threading;
@@ -28,6 +29,7 @@ namespace Servicedog
         public bool Start()//TODO: need do simplify all these instaces...
         {
             var dispatcher = new MessageDispatcher();
+            var processtable = new ProcessTable();
 
             var cancellation = _cancelTasks.Token;
 
@@ -38,6 +40,8 @@ namespace Servicedog
             new TCP(dispatcher)
                 .StartWatching(cancellation);
 
+            new Process(dispatcher)
+                .StartWatching(cancellation);
 
             //and here too
             new NetworkAnalyser(new MessageReceiver())

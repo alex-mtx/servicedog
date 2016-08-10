@@ -63,7 +63,7 @@ namespace Servicedog.Watchers
                 session.EnableProvider(DnsWin2012Parser.ProviderGuid, TraceEventLevel.Informational,
                     matchAnyKeywords: 0x8000000000000000);
 
-                dns.task_03009 += (task_03009Args data) =>
+                dns.DnsNameError += (Manifests.Dns.Win2012.DnsAllServersTimeoutArgs data) =>
                 {
                     try
                     {   //TODO: identify only errors. currently it is getting all name resolutions

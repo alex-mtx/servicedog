@@ -73,6 +73,8 @@
     <Compile Include="Messaging\ZeroMiddleware.cs" />
     <Compile Include="Messaging\Dispatchers\MessageDispatcher.cs" />
     <Compile Include="StaticManifests\AFD\AFD.cs" />
+    <Compile Include="Utils\ProcessTable.cs" />
+    <Compile Include="Watchers\Process.cs" />
     <Compile Include="Watchers\TCP.cs" />
     <Compile Include="Watchers\Watcher.cs" />
     <Compile Include="Watchers\Winsock.cs" />
