@@ -12,7 +12,7 @@ namespace Servicedog.Messaging
 
         public string ToJson()
         {
-            return "{ \"process\":"+ Process.ToString() + ", \"routing_key\":\"" + RoutingKey +"\",\"body\":\"" + Body + "\"";
+            return "{ \"process\":"+ Process.ToJson() + ", \"routing_key\":\"" + RoutingKey +"\",\"body\":\"" + Body + "\"}";
         }
 
         public override string ToString()

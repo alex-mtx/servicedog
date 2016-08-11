@@ -20,18 +20,28 @@ namespace Servicedog.Utils
         public ProcessTable()
         {
             this.Query.QueryString = WMI_OPER_EVENT_QUERY;
+            this.Query.QueryLanguage = "WQL";
         }
 
         public void Init()
         {
             InitializeTableFromWMI();
             this.EventArrived += new EventArrivedEventHandler(watcher_EventArrived);
+            this.Start();
         }
 
         public ProcessInfo Get(int id)
         {
             var process = new ProcessInfo();
-            _table.TryGetValue( (uint)id, out process);
+            process.IsDefault = true;//if something goes wrong the client code won't explode with null exceptions
+
+            if (_table.Count == 0)
+                return process;
+
+            var uintid = (uint)id;
+
+            if(_table.TryGetValue( uintid, out process))
+                process.IsDefault = false;
 
             return process;
         }
@@ -40,8 +50,9 @@ namespace Servicedog.Utils
         private void watcher_EventArrived(object sender, EventArrivedEventArgs e)
         {
             string eventType = e.NewEvent.ClassPath.ClassName;
-            ProcessInfo process = Convert(e.NewEvent["TargetInstance"] as ManagementObject);
-            if (process == null)
+            ProcessInfo process;
+
+            if (!TryConvert(e.NewEvent["TargetInstance"] as ManagementBaseObject, out process))
                 return;
 
             switch (eventType)
@@ -53,7 +64,7 @@ namespace Servicedog.Utils
                     ProcessDeleted(process);
                     break;
                 case MODIFICATION:
-                    ProcessModified(process);
+                    //ProcessModified(process); //TODO: understand what makes a process come this way
                     break;
             }
         }
@@ -63,7 +74,7 @@ namespace Servicedog.Utils
             Debug.WriteLine(process);
 
             if (_table.ContainsKey(process.ProcessId))
-                Console.WriteLine("ProcessModified");
+                Console.WriteLine(process.ToJson());
         }
 
         private void ProcessDeleted(ProcessInfo process)
@@ -78,9 +89,11 @@ namespace Servicedog.Utils
         {
             Debug.WriteLine(process);
             _table[process.ProcessId] = process;
+            Console.WriteLine(process.ToJson());
+
         }
 
-        
+
         private void InitializeTableFromWMI()
         {
             try
@@ -93,7 +106,10 @@ namespace Servicedog.Utils
 
                 foreach (ManagementObject obj in processList)
                 {
-                    var process = Convert(obj);
+                    ProcessInfo process;
+                    if (!TryConvert(obj, out process))
+                        continue;
+
                     _table[process.ProcessId] = process; 
                 }
 
@@ -103,10 +119,14 @@ namespace Servicedog.Utils
             }
         }
 
-        private ProcessInfo Convert(ManagementObject obj)
+        private bool TryConvert(ManagementBaseObject obj, out ProcessInfo process)
         {
-            
-            ProcessInfo process = new ProcessInfo();
+            process = new ProcessInfo();
+            process.IsDefault = true;
+
+            if (obj == null || (uint?)obj["ProcessId"] == 0)
+                return false;
+
             process.Caption = (string)obj["Caption"];
             process.CommandLine = (string)obj["CommandLine"];
             process.CreationClassName = (string)obj["CreationClassName"];
@@ -161,7 +181,7 @@ namespace Servicedog.Utils
             process.WriteOperationCount = (ulong?)obj["WriteOperationCount"];
             process.WriteTransferCount = (ulong?)obj["WriteTransferCount"];
 
-            return process;
+            return true;
         }
 
         //__InstanceCreationEvent
@@ -268,11 +288,24 @@ namespace Servicedog.Utils
                 return DateTime.Now.Subtract(TerminationDate.Value).TotalSeconds > 30;
             }
         }
+        public bool IsDefault;
 
         public override string ToString()
         {
-            return string.Format("{\"id\":{0},\"name\":\"{1}\",\"path\":\"{2}\"",ProcessId,Name,ExecutablePath);
+            if (IsDefault)
+                return "Empty process";
+
+            var path = string.IsNullOrEmpty(ExecutablePath) ? string.Empty : ExecutablePath.Replace("\\", "/");
+
+            return string.Format("{0}, {1}, {2}", ProcessId, Name,path);
         }
 
+        internal string ToJson()
+        {
+            if (IsDefault)
+                return "{ }";
+            var path = string.IsNullOrEmpty(ExecutablePath) ? string.Empty : ExecutablePath.Replace("\\", "/");
+            return "{ \"id\":" + ProcessId + ", \"name\":\"" + Name +"\",\"path\":\"" + path + "\"}";
+        }
     }
 }
