@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Servicedog.Utils
 {
+    /// <summary>
+    /// Provides access to a <see cref="ProcessInfo"/> even when the original process has been terminated.
+    /// <para>Each time a process is created or terminated by the underlying operating system this table is updated.
+    /// </para>
+    /// </summary>
     public class ProcessTable: ManagementEventWatcher
     {
         private readonly ConcurrentDictionary<uint, ProcessInfo> _table = new ConcurrentDictionary<uint, ProcessInfo>();
@@ -19,8 +21,7 @@ namespace Servicedog.Utils
 
         public ProcessTable()
         {
-            this.Query.QueryString = WMI_OPER_EVENT_QUERY;
-            this.Query.QueryLanguage = "WQL";
+            this.Query = new WqlEventQuery(WMI_OPER_EVENT_QUERY);
         }
 
         public void Init()
@@ -38,9 +39,7 @@ namespace Servicedog.Utils
             if (_table.Count == 0)
                 return process;
 
-            var uintid = (uint)id;
-
-            if(_table.TryGetValue( uintid, out process))
+            if(_table.TryGetValue((uint)id, out process))
                 process.IsDefault = false;
 
             return process;
@@ -69,30 +68,37 @@ namespace Servicedog.Utils
             }
         }
 
-        private void ProcessModified(ProcessInfo process)
-        {
-            Debug.WriteLine(process);
-
-            if (_table.ContainsKey(process.ProcessId))
-                Console.WriteLine(process.ToJson());
-        }
-
         private void ProcessDeleted(ProcessInfo process)
         {
-            Debug.WriteLine(process);
             if (_table.ContainsKey(process.ProcessId))
-                _table[process.ProcessId].TerminationDate = process.TerminationDate;
+                _table[process.ProcessId].TerminationDate = DateTime.Now;
         }
 
 
         private void ProcessCreated(ProcessInfo process)
         {
-            Debug.WriteLine(process);
             _table[process.ProcessId] = process;
-            Console.WriteLine(process.ToJson());
-
+            ExcludeOldDeleted();
         }
 
+        private void ExcludeOldDeleted()
+        {
+            var expiredItems = _table.Where(x => x.Value.Expired == true);
+            var tableSize = _table.Count;
+            decimal proportion = (decimal) expiredItems.Count() / tableSize;
+            decimal maxPercent = 0.01M;
+
+            if (proportion > maxPercent)//no more than 10%
+            {
+                Debug.WriteLine("more than 10% expired");
+                ProcessInfo process;
+                foreach (var item in expiredItems)
+                {
+                    _table.TryRemove(item.Value.ProcessId, out process);
+                    Debug.WriteLine("Expired and Removed from table " + process.ProcessId);
+                }
+            }
+        }
 
         private void InitializeTableFromWMI()
         {
@@ -181,54 +187,8 @@ namespace Servicedog.Utils
             process.WriteOperationCount = (ulong?)obj["WriteOperationCount"];
             process.WriteTransferCount = (ulong?)obj["WriteTransferCount"];
 
+            process.IsDefault = false;
             return true;
-        }
-
-        //__InstanceCreationEvent
-        //__InstanceDeletionEvent
-        //__InstanceModificationEvent
-        private IEnumerable<ProcessInfo> Listen(string eventName)
-        {
-            //Task.Run(() =>
-            //{
-                ProcessInfo process = new ProcessInfo();
-
-                // Create event query to be notified within 1 second of 
-                // a change in a service
-                WqlEventQuery query =
-                    new WqlEventQuery(eventName,
-                    "TargetInstance isa \"Win32_Process\"");
-
-                // Initialize an event watcher and subscribe to events 
-                // that match this query
-                ManagementEventWatcher watcher =
-                    new ManagementEventWatcher();
-                watcher.Query = query;
-                // times out watcher.WaitForNextEvent in 5 seconds
-                // watcher.Options.Timeout = new TimeSpan(0, 0, 1);
-
-                // Block until the next event occurs 
-                // Note: this can be done in a loop if waiting for 
-                //        more than one occurrence
-                while (true) {
-                    ManagementBaseObject e = watcher.WaitForNextEvent();
-                process.Name = ((ManagementBaseObject)e
-                        ["TargetInstance"])["Name"].ToString();
-
-                     yield return process;
-                    //Display information from the event
-                    Console.WriteLine(
-                        "Process {0} has been created, path is: {1}",
-                        ((ManagementBaseObject)e
-                        ["TargetInstance"])["Name"],
-                        ((ManagementBaseObject)e
-                        ["TargetInstance"])["ExecutablePath"]);
-
-                    //Cancel the subscription
-                    // watcher.Stop();
-
-                }
-            //});
         }
     }
 
@@ -304,7 +264,7 @@ namespace Servicedog.Utils
         {
             if (IsDefault)
                 return "{ }";
-            var path = string.IsNullOrEmpty(ExecutablePath) ? string.Empty : ExecutablePath.Replace("\\", "/");
+            var path = string.IsNullOrEmpty(ExecutablePath) ? string.Empty : ExecutablePath;
             return "{ \"id\":" + ProcessId + ", \"name\":\"" + Name +"\",\"path\":\"" + path + "\"}";
         }
     }
