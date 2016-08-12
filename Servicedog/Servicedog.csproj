@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -73,7 +74,9 @@
     <Compile Include="Messaging\ZeroMiddleware.cs" />
     <Compile Include="Messaging\Dispatchers\MessageDispatcher.cs" />
     <Compile Include="StaticManifests\AFD\AFD.cs" />
-    <Compile Include="Utils\ProcessTable.cs" />
+    <Compile Include="Utils\ProcessTable.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Watchers\Process.cs" />
     <Compile Include="Watchers\TCP.cs" />
     <Compile Include="Watchers\Watcher.cs" />

@@ -12,11 +12,13 @@ namespace Servicedog.Analysers
     public abstract class Analyser
     {
         protected IReceiver _receiver;
+        protected IDispatcher _dispatcher;
         protected Message _message;
 
-        public Analyser(IReceiver receiver)
+        public Analyser(IReceiver receiver, IDispatcher dispatcher)
         {
             _receiver = receiver;
+            _dispatcher = dispatcher;
             
         }
         

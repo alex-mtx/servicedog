@@ -8,17 +8,23 @@ namespace Servicedog.Analysers
 {
     public class NetworkAnalyser : Analyser
     {
+
+        public const string NETWORK_UNREACHABLE_DESTINATION = "NETWORK_UNREACHABLE_DESTINATION";
+        public const string NETWORK_COULD_NOT_RESOLVE_NAME = "NETWORK_COULD_NOT_RESOLVE_NAME";
+        public const string NETWORK_DNS_QUERY_TIMEOUT = "NETWORK_DNS_QUERY_TIMEOUT";
+
         private readonly IDictionary<string, Message> _tcpEvents = new Dictionary<string, Message>();
 
-        public NetworkAnalyser(IReceiver receiver) : base(receiver) { }
+        public NetworkAnalyser(IReceiver receiver, IDispatcher dispatcher) : base(receiver, dispatcher) { }
 
         public override void Analyse(Message message)
         {
-            switch (message.RoutingKey) {
+            switch (message.RoutingKey)
+            {
 
                 case TCP.TCP_RECONNECT:
-                        ProcessTcpReconnect(message);
-                        break;
+                    ProcessTcpReconnect(message);
+                    break;
 
                 case DNS.DNS_NAME_ERROR:
                     ProcessDNSErrors(message);
@@ -38,9 +44,9 @@ namespace Servicedog.Analysers
             Console.WriteLine(message.ToJson());
         }
 
-        private void ProcessDNSErrors(Message message)
+        private void ProcessDNSErrors(Message message)//TODO: implement logic
         {
-            Console.WriteLine("Could not resolve "+ message.ToJson());
+            Console.WriteLine("Could not resolve " + message.ToJson());
         }
 
         private void ProcessTcpReconnect(Message message)
@@ -50,6 +56,7 @@ namespace Servicedog.Analysers
                 //ok there is an error. the application could not connect to destination
 
                 //Send error down the pipe
+                _dispatcher.Send(message.ProcessId, message.ToJson(), NETWORK_UNREACHABLE_DESTINATION);
                 Console.WriteLine(" TCP failed to connect to " + message.ToJson());
 
                 //no need to keep this anymore.
@@ -64,8 +71,8 @@ namespace Servicedog.Analysers
         public override IEnumerable<string> PrefixesToSubscribeTo()
         {
             return new[] {  TCP.TCP_RECONNECT,
-                            Watchers.DNS.DNS_NAME_ERROR,
-                            Watchers.DNS.DNS_TIMED_OUT
+                            DNS.DNS_NAME_ERROR,
+                            DNS.DNS_TIMED_OUT
                             };
 
         }
