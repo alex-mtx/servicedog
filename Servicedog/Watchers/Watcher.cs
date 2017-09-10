@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Servicedog.Watchers
 {
-    public abstract class Watcher
+    public abstract class Watcher : IWatcher
     {
         protected IDispatcher _sender;
         protected const string SESSION_NAME_PREFIX = "servicedog-";

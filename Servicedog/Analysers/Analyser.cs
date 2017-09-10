@@ -10,11 +10,11 @@ using Servicedog.Messaging.Receivers;
 
 namespace Servicedog.Analysers
 {
-    public abstract class Analyser
+    public abstract class Analyser : IAnalyser
     {
         protected IReceiver _receiver;
         protected IDispatcher _dispatcher;
-        protected Message _message;
+        protected IMessage _message;
 
         //For testing and injection purposes
         public Analyser(IReceiver receiver, IDispatcher dispatcher)
@@ -60,7 +60,7 @@ namespace Servicedog.Analysers
             }
         }
 
-        public abstract void Analyse(Message message);
+        public abstract void Analyse(IMessage message);
         public abstract IEnumerable<string> PrefixesToSubscribeTo();
     }
 }

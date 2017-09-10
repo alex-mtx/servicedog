@@ -16,12 +16,12 @@ namespace Servicedog.Analysers
         public const string NETWORK_COULD_NOT_RESOLVE_NAME = "NETWORK_COULD_NOT_RESOLVE_NAME";
         public const string NETWORK_DNS_QUERY_TIMEOUT = "NETWORK_DNS_QUERY_TIMEOUT";
 
-        private readonly IDictionary<string, Message> _tcpEvents = new Dictionary<string, Message>();
+        private readonly IDictionary<string, IMessage> _tcpEvents = new Dictionary<string, IMessage>();
 
         public NetworkAnalyser(IReceiver receiver, IDispatcher dispatcher) : base(receiver, dispatcher) { }
         public NetworkAnalyser(IDispatcher dispatcher) : base(dispatcher) { }
 
-        public override void Analyse(Message message)
+        public override void Analyse(IMessage message)
         {
             //TODO: need a better design here... this switch will become 
             //unmanageable soon
@@ -50,12 +50,12 @@ namespace Servicedog.Analysers
             Console.WriteLine(message.ToJson());
         }
 
-        private void ProcessDNSErrors(Message message,string error)
+        private void ProcessDNSErrors(IMessage message,string error)
         {
             _dispatcher.Send(message.ProcessId, message.Body, error);
         }
 
-        private void ProcessTcpReconnect(Message message)
+        private void ProcessTcpReconnect(IMessage message)
         {
             if (_tcpEvents.ContainsKey(message.ToString())) //HACK: use a computed hash instead?
             {

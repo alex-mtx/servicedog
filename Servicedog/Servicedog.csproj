@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysers\Analyser.cs" />
+    <Compile Include="Analysers\IAnalyser.cs" />
     <Compile Include="Analysers\ProcessAnalyser.cs" />
     <Compile Include="Messaging\IDispatcher.cs" />
     <Compile Include="Messaging\IMessage.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="OS\ProcessTable.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Watchers\IWatcher.cs" />
     <Compile Include="Watchers\Process.cs" />
     <Compile Include="Watchers\TCP.cs" />
     <Compile Include="Watchers\Watcher.cs" />

@@ -13,7 +13,7 @@ namespace Servicedog.Messaging.Dispatchers
             _sock = middleware.Publisher;
         }
 
-        public void Send(Message message, string routingKey)
+        public void Send(IMessage message, string routingKey)
         {
             using (var zmessage = new ZMessage())//HACK: can we reuse instance between events?
             {

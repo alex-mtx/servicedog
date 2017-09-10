@@ -13,7 +13,7 @@ namespace Servicedog.Analysers
         public ProcessAnalyser(IReceiver receiver, IDispatcher dispatcher) : base(receiver, dispatcher){}
         public ProcessAnalyser(IDispatcher dispatcher) : base( dispatcher){ }
 
-        public override void Analyse(Message message)
+        public override void Analyse(IMessage message)
         {
             Console.WriteLine(message.Body);
         }
