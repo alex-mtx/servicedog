@@ -2,7 +2,7 @@
 using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using Microsoft.Diagnostics.Tracing.Session;
 using Servicedog.Messaging;
-using Servicedog.Utils;
+using Servicedog.OS;
 using System;
 using System.Diagnostics;
 using System.Threading;

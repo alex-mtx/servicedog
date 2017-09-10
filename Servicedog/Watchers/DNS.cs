@@ -2,7 +2,7 @@
 using Microsoft.Diagnostics.Tracing.Session;
 using System;
 using System.Diagnostics;
-using Servicedog.Utils;
+using Servicedog.OS;
 using Servicedog.Manifests.Dns;
 using Servicedog.Manifests.Dns.Win2008;
 using Servicedog.Manifests.Dns.Win2012;

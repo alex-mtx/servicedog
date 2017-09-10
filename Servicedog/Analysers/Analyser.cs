@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Servicedog.Utils;
+using Servicedog.OS;
+using Servicedog.Messaging.Receivers;
 
 namespace Servicedog.Analysers
 {
@@ -15,6 +16,7 @@ namespace Servicedog.Analysers
         protected IDispatcher _dispatcher;
         protected Message _message;
 
+        //For testing and injection purposes
         public Analyser(IReceiver receiver, IDispatcher dispatcher)
         {
             _receiver = receiver;
@@ -22,6 +24,12 @@ namespace Servicedog.Analysers
             
         }
         
+        public Analyser(IDispatcher dispatcher)
+        {
+            _dispatcher = dispatcher;
+            _receiver = new MessageReceiver();
+
+        }
         /// <summary>
         /// Start listening for new messages and analyse them. All in another Thread.
         /// </summary>

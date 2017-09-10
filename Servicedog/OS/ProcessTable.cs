@@ -4,14 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Management;
 
-namespace Servicedog.Utils
+namespace Servicedog.OS
 {
     /// <summary>
     /// Provides access to a <see cref="ProcessInfo"/> even when the original process has been terminated.
     /// <para>Each time a process is created or terminated by the underlying operating system this table is updated.
     /// </para>
     /// </summary>
-    public class ProcessTable: ManagementEventWatcher
+    public class ProcessTable : ManagementEventWatcher, IProcessTable
     {
         private readonly ConcurrentDictionary<uint, ProcessInfo> _table = new ConcurrentDictionary<uint, ProcessInfo>();
         private const  string CREATION = "__InstanceCreationEvent";
@@ -22,16 +22,17 @@ namespace Servicedog.Utils
         public ProcessTable()
         {
             this.Query = new WqlEventQuery(WMI_OPER_EVENT_QUERY);
+            Init();
         }
 
-        public void Init()
+        private void Init()
         {
             InitializeTableFromWMI();
             this.EventArrived += new EventArrivedEventHandler(watcher_EventArrived);
             this.Start();
         }
 
-        public ProcessInfo Get(int id)
+        public IProcessInfo Get(int id)
         {
             var process = new ProcessInfo();
             process.IsDefault = true;//if something goes wrong the client code won't explode with null exceptions
@@ -192,53 +193,53 @@ namespace Servicedog.Utils
         }
     }
 
-    public class ProcessInfo
+    public class ProcessInfo : IProcessInfo
     {
-        public string Caption;
-        public string CommandLine;
-        public string CreationClassName;
-        public DateTime? CreationDate;
-        public string CSCreationClassName;
-        public string CSName;
-        public string Description;
-        public string ExecutablePath;
-        public ushort? ExecutionState;
-        public string Handle;
-        public uint? HandleCount;
-        public DateTime? InstallDate;
-        public ulong? KernelModeTime;
-        public uint? MaximumWorkingSetSize;
-        public uint? MinimumWorkingSetSize;
-        public string Name;
-        public string OSCreationClassName;
-        public string OSName;
-        public ulong? OtherOperationCount;
-        public ulong? OtherTransferCount;
-        public uint? PageFaults;
-        public uint? PageFileUsage;
-        public uint? ParentProcessId;
-        public uint? PeakPageFileUsage;
-        public ulong? PeakVirtualSize;
-        public uint? PeakWorkingSetSize;
-        public uint? Priority;
-        public ulong? PrivatePageCount;
-        public uint ProcessId;
-        public uint? QuotaNonPagedPoolUsage;
-        public uint? QuotaPagedPoolUsage;
-        public uint? QuotaPeakNonPagedPoolUsage;
-        public uint? QuotaPeakPagedPoolUsage;
-        public ulong? ReadOperationCount;
-        public ulong? ReadTransferCount;
-        public uint? SessionId;
-        public string Status;
-        public DateTime? TerminationDate;
-        public uint? ThreadCount;
-        public ulong? UserModeTime;
-        public ulong? VirtualSize;
-        public string WindowsVersion;
-        public ulong? WorkingSetSize;
-        public ulong? WriteOperationCount;
-        public ulong? WriteTransferCount;
+        public string Caption{get;set;}
+        public string CommandLine{get;set;}
+        public string CreationClassName{get;set;}
+        public DateTime? CreationDate{get;set;}
+        public string CSCreationClassName{get;set;}
+        public string CSName{get;set;}
+        public string Description{get;set;}
+        public string ExecutablePath{get;set;}
+        public ushort? ExecutionState{get;set;}
+        public string Handle{get;set;}
+        public uint? HandleCount{get;set;}
+        public DateTime? InstallDate{get;set;}
+        public ulong? KernelModeTime{get;set;}
+        public uint? MaximumWorkingSetSize{get;set;}
+        public uint? MinimumWorkingSetSize{get;set;}
+        public string Name{get;set;}
+        public string OSCreationClassName{get;set;}
+        public string OSName{get;set;}
+        public ulong? OtherOperationCount{get;set;}
+        public ulong? OtherTransferCount{get;set;}
+        public uint? PageFaults{get;set;}
+        public uint? PageFileUsage{get;set;}
+        public uint? ParentProcessId{get;set;}
+        public uint? PeakPageFileUsage{get;set;}
+        public ulong? PeakVirtualSize{get;set;}
+        public uint? PeakWorkingSetSize{get;set;}
+        public uint? Priority{get;set;}
+        public ulong? PrivatePageCount{get;set;}
+        public uint ProcessId{get;set;}
+        public uint? QuotaNonPagedPoolUsage{get;set;}
+        public uint? QuotaPagedPoolUsage{get;set;}
+        public uint? QuotaPeakNonPagedPoolUsage{get;set;}
+        public uint? QuotaPeakPagedPoolUsage{get;set;}
+        public ulong? ReadOperationCount{get;set;}
+        public ulong? ReadTransferCount{get;set;}
+        public uint? SessionId{get;set;}
+        public string Status{get;set;}
+        public DateTime? TerminationDate{get;set;}
+        public uint? ThreadCount{get;set;}
+        public ulong? UserModeTime{get;set;}
+        public ulong? VirtualSize{get;set;}
+        public string WindowsVersion{get;set;}
+        public ulong? WorkingSetSize{get;set;}
+        public ulong? WriteOperationCount{get;set;}
+        public ulong? WriteTransferCount{get;set;}
         public bool Expired
         {
             get
@@ -248,7 +249,7 @@ namespace Servicedog.Utils
                 return DateTime.Now.Subtract(TerminationDate.Value).TotalSeconds > 30;
             }
         }
-        public bool IsDefault;
+        public bool IsDefault { get; set; }
 
         public override string ToString()
         {
@@ -260,7 +261,7 @@ namespace Servicedog.Utils
             return string.Format("{0}, {1}, {2}", ProcessId, Name,path);
         }
 
-        internal string ToJson()
+        public string ToJson()
         {
             if (IsDefault)
                 return "{ }";

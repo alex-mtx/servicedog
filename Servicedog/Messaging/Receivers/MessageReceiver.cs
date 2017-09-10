@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Servicedog.Utils;
+using Servicedog.OS;
 using ZeroMQ;
 
 namespace Servicedog.Messaging.Receivers
@@ -15,26 +15,23 @@ namespace Servicedog.Messaging.Receivers
         private const int ROUTING_KEY_POSITION = 0;
         private const int PROCESS_ID_POSITION = 1;
         private const int BODY_POSITION = 2;
-        protected ProcessTable _processes;
+        protected IProcessTable _processes;
 
 
         public MessageReceiver()
         {
-            _queue = ZeroMiddleware.Instace.CreateConsumer();
+            _queue = MessageMiddleware.Instace.CreateConsumer();
             _processes = new ProcessTable();
-            _processes.Init();
-
-
         }
         public MessageReceiver(ICollection<string> routingKeys)
         {
-            _queue = ZeroMiddleware.Instace.CreateConsumer(routingKeys);
+            _queue = MessageMiddleware.Instace.CreateConsumer(routingKeys);
             AddRoutingKeys(routingKeys);
         }
 
         public MessageReceiver(string routingKey)
         {
-            _queue = ZeroMiddleware.Instace.CreateConsumer(routingKey);
+            _queue = MessageMiddleware.Instace.CreateConsumer(routingKey);
             AddRoutingKey(routingKey);
 
         }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Diagnostics.Tracing.Session;
 using Servicedog.Messaging;
 using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
+using System.Diagnostics;
 
 namespace Servicedog.Watchers
 {
@@ -22,11 +23,14 @@ namespace Servicedog.Watchers
         {
             session.EnableKernelProvider(Microsoft.Diagnostics.Tracing.Parsers.KernelTraceEventParser.Keywords.Process);
             session.Source.Kernel.ProcessStart += (ProcessTraceData data) => {
-                Console.WriteLine(data.Dump());
+                Debug.WriteLine(data.Dump());
+                _sender.Send(data.ProcessID,"Process Started:" + data.CommandLine, PROCESS_CREATION);    
             };
             session.Source.Kernel.ProcessStop += (ProcessTraceData data) =>
               {
-                  Console.WriteLine(data.Dump());
+                  Debug.WriteLine(data.Dump());
+                  _sender.Send(data.ProcessID, "Process Ended:" + data.CommandLine, PROCESS_END);
+
               };
         }
 

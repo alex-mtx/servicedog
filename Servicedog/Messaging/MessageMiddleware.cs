@@ -7,9 +7,9 @@ using ZeroMQ;
 
 namespace Servicedog.Messaging
 {
-    public class ZeroMiddleware : IDisposable
+    public class MessageMiddleware : IDisposable
     {
-        private static volatile ZeroMiddleware instance;
+        private static volatile MessageMiddleware instance;
         public ZContext Queue { get; private set; }
         private static object syncRoot = new object();
         private static volatile bool initialized;
@@ -18,7 +18,7 @@ namespace Servicedog.Messaging
         private List<ZSocket> _subscribers = new List<ZSocket>();
 
 
-        private ZeroMiddleware()
+        private MessageMiddleware()
         {
             Queue = new ZContext();
             Publisher = new ZSocket(Queue, ZSocketType.PUB);
@@ -26,14 +26,14 @@ namespace Servicedog.Messaging
             initialized = true;
         }
 
-        public static ZeroMiddleware Instace
+        public static MessageMiddleware Instace
         {
             get
             {
                 lock (syncRoot)
                 {
                     if (initialized) return instance;
-                    instance = new ZeroMiddleware();
+                    instance = new MessageMiddleware();
                     return instance;
                 }
             }

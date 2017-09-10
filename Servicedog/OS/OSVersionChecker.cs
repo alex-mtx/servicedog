@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Servicedog.Utils
+namespace Servicedog.OS
 {
     /// <summary>
     /// Based on http://stackoverflow.com/a/37696553/1456567

@@ -1,7 +1,8 @@
 ﻿using Servicedog.Analysers;
+using Servicedog.Messaging;
 using Servicedog.Messaging.Dispatchers;
 using Servicedog.Messaging.Receivers;
-using Servicedog.Utils;
+using Servicedog.OS;
 using Servicedog.Watchers;
 using System;
 using System.Threading;
@@ -9,11 +10,18 @@ using System.Threading.Tasks;
 
 namespace Servicedog
 {
-    class ServiceRunner 
+    public class ServiceRunner 
     {
         private readonly CancellationTokenSource _cancelTasks = new CancellationTokenSource();
-        public ServiceRunner()
+        private readonly IProcessTable _processtable;
+        private readonly IDispatcher _dispatcher;
+
+ 
+
+        public ServiceRunner(IDispatcher messaging,IProcessTable processTable )
         {
+            _dispatcher = messaging;
+            _processtable = processTable;
 #if DEBUG
             Start();
             Console.WriteLine("Ctrl+c to stop");
@@ -23,29 +31,29 @@ namespace Servicedog
             Console.WriteLine("tasks cancelled.");
             Console.ReadKey();
 #endif
-
         }
 
         public bool Start()//TODO: need do simplify all these instaces...
         {
-            var dispatcher = new MessageDispatcher();
-            var processtable = new ProcessTable();
-            processtable.Init();
 
             var cancellation = _cancelTasks.Token;
 
-            //TODO: need a better design here..
-            new DNS(dispatcher)
+            //TODO: need a better design here.. I would like just to implement the specialized classes
+            // and.. bang! something outside it just bring it into life!
+            new DNS(_dispatcher)
                 .StartWatching(cancellation);
 
-            new TCP(dispatcher)
+            new TCP(_dispatcher)
                 .StartWatching(cancellation);
 
-            //new Process(dispatcher)
-            //    .StartWatching(cancellation);
+            new Process(_dispatcher)
+                .StartWatching(cancellation);
 
             //and here too
-            new NetworkAnalyser(new MessageReceiver())
+            new NetworkAnalyser(_dispatcher)
+                .StartAnalysing(cancellation);
+
+            new ProcessAnalyser(_dispatcher)
                 .StartAnalysing(cancellation);
 
             return true;

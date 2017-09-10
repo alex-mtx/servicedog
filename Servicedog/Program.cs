@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Servicedog.Messaging;
+using Servicedog.Messaging.Dispatchers;
+using Servicedog.OS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -20,7 +23,7 @@ namespace Servicedog
                 x.SetDescription("Captures and analyses problems that interfere on the communications between local and remote applications.");
                 x.Service<ServiceRunner>(sc =>
                 {
-                    sc.ConstructUsing(() => new ServiceRunner());
+                    sc.ConstructUsing(() => new ServiceRunner(new MessageDispatcher(),new ProcessTable()));
                     sc.WhenStarted(s => s.Start());
                     sc.WhenStopped(s => s.Stop());
                     sc.WhenShutdown(s => s.Shutdown());

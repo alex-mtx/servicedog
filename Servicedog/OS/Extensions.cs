@@ -10,7 +10,7 @@ using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Servicedog.Utils
+namespace Servicedog.OS
 {
     public static class StringExtensions
     {

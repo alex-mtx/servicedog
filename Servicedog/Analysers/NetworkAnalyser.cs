@@ -6,9 +6,12 @@ using System.Diagnostics;
 
 namespace Servicedog.Analysers
 {
+    /// <summary>
+    /// Takes care of networking related issues/behaviors.
+    /// </summary>
     public class NetworkAnalyser : Analyser
     {
-
+        //these are the routing keys used to subscribe to each message channel on the base class
         public const string NETWORK_UNREACHABLE_DESTINATION = "NETWORK_UNREACHABLE_DESTINATION";
         public const string NETWORK_COULD_NOT_RESOLVE_NAME = "NETWORK_COULD_NOT_RESOLVE_NAME";
         public const string NETWORK_DNS_QUERY_TIMEOUT = "NETWORK_DNS_QUERY_TIMEOUT";
@@ -16,9 +19,12 @@ namespace Servicedog.Analysers
         private readonly IDictionary<string, Message> _tcpEvents = new Dictionary<string, Message>();
 
         public NetworkAnalyser(IReceiver receiver, IDispatcher dispatcher) : base(receiver, dispatcher) { }
+        public NetworkAnalyser(IDispatcher dispatcher) : base(dispatcher) { }
 
         public override void Analyse(Message message)
         {
+            //TODO: need a better design here... this switch will become 
+            //unmanageable soon
             switch (message.RoutingKey)
             {
 
@@ -27,11 +33,11 @@ namespace Servicedog.Analysers
                     break;
 
                 case DNS.DNS_NAME_ERROR:
-                    ProcessDNSErrors(message);
+                    ProcessDNSErrors(message,NETWORK_COULD_NOT_RESOLVE_NAME);
                     break;
 
                 case DNS.DNS_TIMED_OUT:
-                    ProcessDNSErrors(message);
+                    ProcessDNSErrors(message,NETWORK_DNS_QUERY_TIMEOUT);
                     break;
 
                 default:
@@ -44,22 +50,22 @@ namespace Servicedog.Analysers
             Console.WriteLine(message.ToJson());
         }
 
-        private void ProcessDNSErrors(Message message)//TODO: implement logic
+        private void ProcessDNSErrors(Message message,string error)
         {
-            Console.WriteLine("Could not resolve " + message.ToJson());
+            _dispatcher.Send(message.ProcessId, message.Body, error);
         }
 
         private void ProcessTcpReconnect(Message message)
         {
             if (_tcpEvents.ContainsKey(message.ToString())) //HACK: use a computed hash instead?
             {
-                //ok there is an error. the application could not connect to destination
+                //ok there is an error. the application could not connect to destination twice.
 
                 //Send error down the pipe
-                _dispatcher.Send(message.ProcessId, message.ToJson(), NETWORK_UNREACHABLE_DESTINATION);
+                _dispatcher.Send(message.ProcessId, message.Body, NETWORK_UNREACHABLE_DESTINATION);
                 Console.WriteLine(" TCP failed to connect to " + message.ToJson());
 
-                //no need to keep this anymore.
+                //no need to keep this as we are now on the second occurrence of same error of the same process
                 _tcpEvents.Remove(message.ToString());
 
             }

@@ -1,10 +1,10 @@
-﻿using Servicedog.Utils;
+﻿using Servicedog.OS;
 
 namespace Servicedog.Messaging
 {
-    public class Message
+    public class Message : IMessage
     {
-        public ProcessInfo Process { get; set; }
+        public IProcessInfo Process { get; set; }
 
         public int ProcessId { get; set; }
         public string RoutingKey { get; set; }
