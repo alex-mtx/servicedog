@@ -12,7 +12,7 @@ using System.Threading;
 namespace Servicedog.Tests.Watchers
 {
     [TestFixture]
-    public class ProcessTest
+    public class DnsTest
     {
         [Test(TestOf = typeof(DNS))]
         public void When_A_Dns_Lookup_Times_Out_Should_Notify_Via_Dispatcher()

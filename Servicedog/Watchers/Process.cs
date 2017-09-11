@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using Microsoft.Diagnostics.Tracing.Session;
 using Servicedog.Messaging;
-using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using System.Diagnostics;
 
 namespace Servicedog.Watchers
