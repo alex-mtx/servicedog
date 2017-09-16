@@ -81,12 +81,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Watchers\IWatcher.cs" />
-    <Compile Include="Watchers\Process.cs" />
-    <Compile Include="Watchers\TCP.cs" />
+    <Compile Include="Watchers\ProcessWatcher.cs" />
+    <Compile Include="Watchers\TcpWatcher.cs" />
     <Compile Include="Watchers\Watcher.cs" />
-    <Compile Include="Watchers\Winsock.cs" />
-    <Compile Include="Watchers\CLR.cs" />
-    <Compile Include="Watchers\DNS.cs" />
+    <Compile Include="Watchers\WinsockWatcher.cs" />
+    <Compile Include="Watchers\ClrWatcher.cs" />
+    <Compile Include="Watchers\DnsWatcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StaticManifests\DNS\DNS2008en.cs" />

@@ -10,13 +10,13 @@ using System.Threading;
 
 namespace Servicedog.Watchers
 {
-    public class Winsock : Watcher
+    public class WinsockWatcher : Watcher
     {
         public const string ABORT = "winsock_abort";
         public const string CONNECT = "winsock_connect";
         public const string ERROR_ON_CONNECT = "winsock_error_on_connect";
 
-        public Winsock(IDispatcher sender) : base(sender) { }
+        public WinsockWatcher(IDispatcher sender) : base(sender) { }
 
         protected override string SessionName()
         {

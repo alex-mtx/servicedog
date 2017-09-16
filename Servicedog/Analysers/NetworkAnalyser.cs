@@ -28,15 +28,15 @@ namespace Servicedog.Analysers
             switch (message.RoutingKey)
             {
 
-                case TCP.TCP_RECONNECT:
+                case TcpWatcher.TCP_RECONNECT:
                     ProcessTcpReconnect(message);
                     break;
 
-                case DNS.DNS_NAME_ERROR:
+                case DnsWatcher.DNS_NAME_ERROR:
                     ProcessDNSErrors(message,NETWORK_COULD_NOT_RESOLVE_NAME);
                     break;
 
-                case DNS.DNS_TIMED_OUT:
+                case DnsWatcher.DNS_TIMED_OUT:
                     ProcessDNSErrors(message,NETWORK_DNS_QUERY_TIMEOUT);
                     break;
 
@@ -76,9 +76,9 @@ namespace Servicedog.Analysers
 
         public override IEnumerable<string> PrefixesToSubscribeTo()
         {
-            return new[] {  TCP.TCP_RECONNECT,
-                            DNS.DNS_NAME_ERROR,
-                            DNS.DNS_TIMED_OUT
+            return new[] {  TcpWatcher.TCP_RECONNECT,
+                            DnsWatcher.DNS_NAME_ERROR,
+                            DnsWatcher.DNS_TIMED_OUT
                             };
 
         }

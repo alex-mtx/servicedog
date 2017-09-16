@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Servicedog.Watchers
 {
-    static class CLR
+    static class ClrWatcher
     {
 
         /// <summary>

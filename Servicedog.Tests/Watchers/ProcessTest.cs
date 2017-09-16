@@ -2,50 +2,54 @@
 using NUnit.Framework;
 using Servicedog.Messaging;
 using Servicedog.Watchers;
-using System;
-using System.Net.Http;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Servicedog.Tests.Watchers
 {
-    [TestFixture]
     public class ProcessTest
     {
         /// <summary>
         /// this is a tricky test. the DNS must resolve the
         /// </summary>
-        [Test(TestOf = typeof(Servicedog.Watchers.Process))]
+        [Test(TestOf = typeof(ProcessWatcher))]
         public void When_A_New_Proccess_Is_Created_By_SO_Should_Notify_Via_Dispatcher()
         {
             // use always IP addresses or a resolvable DNS entry. 
             //Keep in mind that if the hostname could not be resolved, the first error will be a DNS, not a TCP.
-            string falseDnsEntry = "http://127.0.0.1:59999"; 
             var cancel = new CancellationToken();
 
-            var dispatcherMoq = new Mock<IDispatcher>();
-            //dispatcherMoq.Setup(x => x.Send(It.IsAny<int>(), It.IsAny<string>(), Process.PROCESS_CREATION)).Verifiable();
-            dispatcherMoq.Setup(x => x.Send(It.IsAny<IMessage>(),It.Is<string>(y=>y.Equals(Process.PROCESS_CREATION)))).Verifiable();
+            var events = new List<Message>();
+            var dispatcherMoq = WatcherTest.PrepareMock(events);
 
-            //var expectedRoutingKey = Process.PROCESS_CREATION.AsSource().OfLikeness<string>().CreateProxy();
+            //dispatcherMoq.Setup(x => x.Send(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+            //    .Callback<int, string, string>((id, body, routingKey) =>
+            //    {
+            //        remember that the OS is running while we run test, so we may capture lots of events 
+            //        not related with this test. That's why we need to hold a list of all captured events
+            //        events.Add(new Message { ProcessId = id, Body = body, RoutingKey = routingKey });
 
-            var processWatcher = new Servicedog.Watchers.Process(dispatcherMoq.Object);
+            //    });
 
+            var processWatcher = new ProcessWatcher(dispatcherMoq.Object);
+            
             //act
+            processWatcher.StartWatching(cancel);
+            Thread.Sleep(1000);
+            
             var p = new System.Diagnostics.Process();
             p.StartInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe");
-            //p.StartInfo.WorkingDirectory = @"C:\Program Files\Chrome";
+            p.StartInfo.WorkingDirectory = @"C:\windows\temp";
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.UseShellExecute = false;
             p.Start();
-            p.Close();
+            p.Kill();
 
             //give some room to ETW to raise the  Event
-            Thread.Sleep(5000);
+            Thread.Sleep(3000);
 
-            //did TCP send a message?
-            Assert.DoesNotThrow(() => dispatcherMoq.Verify(m => m.Send(It.IsAny<int>(), It.IsAny<string>(), It.Is<string>(x=>x.Equals(Servicedog.Watchers.Process.PROCESS_CREATION)))
-            , Times.AtLeastOnce()));
-
+            WatcherTest.AssertMockCheckDoesNotThrow(dispatcherMoq, Times.AtLeastOnce());
+            WatcherTest.AssertExpectedEventIsSent(events, ProcessWatcher.PROCESS_CREATION, "cmd.exe");
         }
     }
 }

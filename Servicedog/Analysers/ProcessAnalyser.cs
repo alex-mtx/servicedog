@@ -20,7 +20,7 @@ namespace Servicedog.Analysers
 
         public override IEnumerable<string> PrefixesToSubscribeTo()
         {
-            return new[] { Process.PROCESS_CREATION, Process.PROCESS_END };
+            return new[] { ProcessWatcher.PROCESS_CREATION, ProcessWatcher.PROCESS_END };
         }
     }
 }

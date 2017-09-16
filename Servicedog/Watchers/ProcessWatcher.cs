@@ -5,21 +5,22 @@ using System.Diagnostics;
 
 namespace Servicedog.Watchers
 {
-    public class Process : Watcher
+    public class ProcessWatcher : Watcher
     {
         public const string PROCESS_CREATION = "process_creation";
         public const string PROCESS_END = "process_end";
 
-        public Process(IDispatcher sender) : base(sender)
+        public ProcessWatcher(IDispatcher sender) : base(sender)
         {
         }
 
         protected override void Capture(TraceEventSession session)
         {
             session.EnableKernelProvider(Microsoft.Diagnostics.Tracing.Parsers.KernelTraceEventParser.Keywords.Process);
-            session.Source.Kernel.ProcessStart += (ProcessTraceData data) => {
+            session.Source.Kernel.ProcessStart += (ProcessTraceData data) =>
+            {
                 Debug.WriteLine(data.Dump());
-                _sender.Send(data.ProcessID,"Process Started:" + data.CommandLine, PROCESS_CREATION);    
+                _sender.Send(data.ProcessID, "Process Started:" + data.CommandLine, PROCESS_CREATION);
             };
             session.Source.Kernel.ProcessStop += (ProcessTraceData data) =>
               {

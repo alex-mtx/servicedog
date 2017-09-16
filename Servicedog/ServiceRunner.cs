@@ -40,13 +40,13 @@ namespace Servicedog
 
             //TODO: need a better design here.. I would like just to implement the specialized classes
             // and.. bang! something outside it just bring it into life!
-            new DNS(_dispatcher)
+            new DnsWatcher(_dispatcher)
                 .StartWatching(cancellation);
 
-            new TCP(_dispatcher)
+            new TcpWatcher(_dispatcher)
                 .StartWatching(cancellation);
 
-            new Process(_dispatcher)
+            new ProcessWatcher(_dispatcher)
                 .StartWatching(cancellation);
 
             //and here too

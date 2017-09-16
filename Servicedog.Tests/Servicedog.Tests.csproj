@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Watchers\AbstractWatcherTest.cs" />
     <Compile Include="Watchers\ProcessTest.cs" />
     <Compile Include="Watchers\TcpTest.cs" />
     <Compile Include="Watchers\DnsTest.cs" />

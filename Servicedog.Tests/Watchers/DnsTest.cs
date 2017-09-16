@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Moq;
 using NUnit.Framework;
-using Servicedog.Watchers;
-using Moq;
 using Servicedog.Messaging;
+using Servicedog.Watchers;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading;
 
 namespace Servicedog.Tests.Watchers
@@ -14,29 +12,51 @@ namespace Servicedog.Tests.Watchers
     [TestFixture]
     public class DnsTest
     {
-        [Test(TestOf = typeof(DNS))]
+
+        [Test(TestOf = typeof(DnsWatcher))]
         public void When_A_Dns_Lookup_Times_Out_Should_Notify_Via_Dispatcher()
         {
-            string falseDnsEntry = DateTime.Now.Ticks.ToString() + ".unit.test";
-            var cancel = new System.Threading.CancellationToken();
+            var cancel = new CancellationToken();
 
-            var dispatcherMoq = new Mock<IDispatcher>();
-            dispatcherMoq.Setup(x => x.Send(It.IsAny<int>(), It.IsAny<string>(), DNS.DNS_TIMED_OUT)).Verifiable();
+            var events = new List<Message>();
 
-            var dns = new DNS(dispatcherMoq.Object);
+            var dispatcherMoq = WatcherTest.PrepareMock(events);
+
+            // DnsWatcher.DNS_TIMED_OUT
+            var dns = new DnsWatcher(dispatcherMoq.Object);
 
             //act
             dns.StartWatching(cancel);
 
             //now we force a DNS lookup to a non-existing DNS entry
-            var proc = System.Diagnostics.Process.Start("ping", falseDnsEntry);
-            proc.WaitForExit();
+            var falseDnsEntry = DateTime.Now.Ticks.ToString() + ".unit.test";
+            CallService("http://" + falseDnsEntry);
 
             //give some room to ETW to raise the DNS error Event
             Thread.Sleep(2000);
 
-            //did DNS send a message?
-            Assert.DoesNotThrow(() => dispatcherMoq.Verify());
+            WatcherTest.AssertMockCheckDoesNotThrow(dispatcherMoq, Times.AtLeastOnce());
+            WatcherTest.AssertExpectedEventIsSent(events, DnsWatcher.DNS_NAME_ERROR, falseDnsEntry);
         }
+
+        private static void CallService(string unavailableServiceUrl)
+        {
+            try
+            {
+
+                using (var cli = new HttpClient())
+                {
+                    cli.BaseAddress = new Uri(unavailableServiceUrl);
+                    cli.Timeout = new TimeSpan(0, 0, 1);
+                    var asyncTask = cli.GetAsync(new Uri("/nothing", UriKind.Relative));
+                    asyncTask.Wait();
+                }
+            }
+            catch
+            {
+                //swallow it
+            }
+        }
+
     }
 }

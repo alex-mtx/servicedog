@@ -14,11 +14,11 @@ namespace Servicedog.Watchers
     /// Below implementation depends on Operating System version, since provider has evolved between them.
     /// <see cref="https://technet.microsoft.com/en-us/library/dn305896(v=ws.11).aspx"/>
     /// </summary>
-    public class DNS : Watcher
+    public class DnsWatcher : Watcher
     {
         public const string DNS_NAME_ERROR = "dns_name_error";
         public const string DNS_TIMED_OUT = "dns_timed_out";
-        public DNS(IDispatcher sender) : base(sender) { }
+        public DnsWatcher(IDispatcher sender) : base(sender) { }
 
         protected override string SessionName()
         {

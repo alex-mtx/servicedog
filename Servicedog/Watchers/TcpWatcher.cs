@@ -13,12 +13,12 @@ namespace Servicedog.Watchers
     /// <summary>
     /// Captures TCP events from Kernel ETW.
     /// </summary>
-    public class TCP : Watcher
+    public class TcpWatcher : Watcher
     {
         public const string TCP_RECONNECT = "TcpIpReconnect";
 
 
-        public TCP(IDispatcher sender) : base(sender) { }
+        public TcpWatcher(IDispatcher sender) : base(sender) { }
 
         
 
@@ -43,7 +43,7 @@ namespace Servicedog.Watchers
                 {
                     try
                     {
-                    _sender.Send(data.ProcessID, data.daddr + ":" + data.dport, TCP_RECONNECT);
+                        _sender.Send(data.ProcessID, data.daddr + ":" + data.dport, TCP_RECONNECT);
                     }
                     catch (Exception)
                     {
