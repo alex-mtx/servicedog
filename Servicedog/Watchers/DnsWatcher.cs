@@ -1,12 +1,10 @@
 ﻿using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Session;
-using System;
-using System.Diagnostics;
-using Servicedog.OS;
-using Servicedog.Manifests.Dns;
 using Servicedog.Manifests.Dns.Win2008;
 using Servicedog.Manifests.Dns.Win2012;
 using Servicedog.Messaging;
+using Servicedog.OS;
+using System;
 
 namespace Servicedog.Watchers
 {
@@ -19,11 +17,6 @@ namespace Servicedog.Watchers
         public const string DNS_NAME_ERROR = "dns_name_error";
         public const string DNS_TIMED_OUT = "dns_timed_out";
         public DnsWatcher(IDispatcher sender) : base(sender) { }
-
-        protected override string SessionName()
-        {
-            return SESSION_NAME_PREFIX + "dns";
-        }
 
         protected override void Capture(TraceEventSession session)//TODO: needs refactoring. too much logic and code in the same place.
         {

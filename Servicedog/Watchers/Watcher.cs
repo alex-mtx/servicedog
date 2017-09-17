@@ -9,8 +9,11 @@ namespace Servicedog.Watchers
 {
     public abstract class Watcher : IWatcher
     {
+
+        private string SessionName { get { return SESSION_NAME_PREFIX + this.GetType().Name.ToLower(); } }
         protected IDispatcher _sender;
         protected const string SESSION_NAME_PREFIX = "servicedog-";
+
 
         public Watcher(IDispatcher sender)
         {
@@ -27,9 +30,9 @@ namespace Servicedog.Watchers
             {
                 Task.Run(() =>
                     {
-                        Debug.Assert(!string.IsNullOrEmpty(SessionName()));
+                        Debug.Assert(!string.IsNullOrEmpty(SessionName));
 
-                        using (var session = new TraceEventSession(SessionName()))
+                        using (var session = new TraceEventSession(SessionName))
                         {
                             Capture(session);
                             cancellation.Register(() => session.Stop(true));
@@ -47,7 +50,6 @@ namespace Servicedog.Watchers
                 throw;
             }
         }
-        protected abstract string SessionName();
         
         // Register your provider and subscribe to the events at your wish.
         //example:

@@ -18,11 +18,6 @@ namespace Servicedog.Watchers
 
         public WinsockWatcher(IDispatcher sender) : base(sender) { }
 
-        protected override string SessionName()
-        {
-            return SESSION_NAME_PREFIX + "winsock";
-        }
-
         protected override void Capture(TraceEventSession session)
         {
             var parser = new WinsockAfdParser(session.Source);
@@ -34,11 +29,10 @@ namespace Servicedog.Watchers
                 _sender.Send(data.ProcessID, data.ToXml(new StringBuilder()).ToString(), ABORT);
             };
 
-            //TODO: decode the IP address from data.Address... I spended day on that without finding the way out.
+            //TODO: decode the IP address from data.Address... I spended days trying without success.
             parser.AfdConnectWithAddress += (AfdConnectWithAddressConnectedArgs data) =>
             {
                 _sender.Send(data.ProcessID, data.ToXml(new StringBuilder()).ToString(), CONNECT);
-
             };
 
             parser.AfdConnect += (AfdCloseClosedArgs data) =>

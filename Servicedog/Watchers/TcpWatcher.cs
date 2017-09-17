@@ -1,12 +1,9 @@
-﻿using Microsoft.Diagnostics.Tracing.Parsers;
+﻿using Microsoft.Diagnostics.Tracing.Etlx;
+using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using Microsoft.Diagnostics.Tracing.Session;
 using Servicedog.Messaging;
-using Servicedog.OS;
 using System;
-using System.Diagnostics;
-using System.Threading;
-using Microsoft.Diagnostics.Tracing.Etlx;
 
 namespace Servicedog.Watchers
 {
@@ -17,15 +14,7 @@ namespace Servicedog.Watchers
     {
         public const string TCP_RECONNECT = "TcpIpReconnect";
 
-
         public TcpWatcher(IDispatcher sender) : base(sender) { }
-
-        
-
-        protected override string SessionName()
-        {
-            return SESSION_NAME_PREFIX + "kernel-tcp";
-        }
 
         protected override void Capture(TraceEventSession session)
         {

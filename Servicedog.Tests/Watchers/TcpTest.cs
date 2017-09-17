@@ -18,7 +18,7 @@ namespace Servicedog.Tests.Watchers
         [Test(TestOf = typeof(TcpWatcher))]
         public void When_Tcp_Can_Not_Start_A_Conversation_Should_Notify_Via_Dispatcher()
         {
-            // use always IP addresses or a resolvable DNS entry. 
+            // use always IP addresses or a valid and resolvable DNS entry, otherwise the problem will be a DNS error instead a TCP one. 
             //Keep in mind that if the hostname could not be resolved, the first error will be a DNS, not a TCP.
             string unavailableService = "127.0.0.1:59999";
 

@@ -29,10 +29,5 @@ namespace Servicedog.Watchers
 
               };
         }
-
-        protected override string SessionName()
-        {
-            return SESSION_NAME_PREFIX + "process";
-        }
     }
 }
