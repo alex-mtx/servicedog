@@ -39,8 +39,8 @@ namespace Servicedog.Tests.Watchers
             //give some room to ETW to raise the Tcp Event
            Thread.Sleep(1000);
 
-            WatcherTest.AssertMockCheckDoesNotThrow(dispatcherMoq, Times.AtLeastOnce());
-            WatcherTest.AssertExpectedEventIsSent(events, ClrWatcher.EXCEPTION_START, typeof(ApplicationException).FullName);
+            WatcherTest.AssertSendCalled(dispatcherMoq, Times.AtLeastOnce());
+            WatcherTest.AssertExpectedEventSent(events, ClrWatcher.EXCEPTION_START, typeof(ApplicationException).FullName);
         }
 
         [Test(TestOf = typeof(ClrWatcher))]
@@ -67,8 +67,8 @@ namespace Servicedog.Tests.Watchers
             //give some room to ETW to raise the Tcp Event
             Thread.Sleep(1000);
 
-            WatcherTest.AssertMockCheckDoesNotThrow(dispatcherMoq, Times.AtLeastOnce());
-            WatcherTest.AssertExpectedEventIsSent(events, ClrWatcher.EXCEPTION_CATCH_START, nameof(ThrowAndCatch));
+            WatcherTest.AssertSendCalled(dispatcherMoq, Times.AtLeastOnce());
+            WatcherTest.AssertExpectedEventSent(events, ClrWatcher.EXCEPTION_CATCH_START, nameof(ThrowAndCatch));
         }
 
         private static void ThrowAndCatch()

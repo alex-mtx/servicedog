@@ -1,12 +1,9 @@
 ﻿using Servicedog.Analysers;
 using Servicedog.Messaging;
-using Servicedog.Messaging.Dispatchers;
-using Servicedog.Messaging.Receivers;
 using Servicedog.OS;
 using Servicedog.Watchers;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Servicedog
 {
@@ -33,7 +30,7 @@ namespace Servicedog
 #endif
         }
 
-        public bool Start()//TODO: need do simplify all these instaces...
+        public void Start()//TODO: need do simplify all these instaces...
         {
 
             var cancellation = _cancelTasks.Token;
@@ -46,7 +43,10 @@ namespace Servicedog
             new TcpWatcher(_dispatcher)
                 .StartWatching(cancellation);
 
-            new ProcessWatcher(_dispatcher)
+            //new ProcessWatcher(_dispatcher)
+            //    .StartWatching(cancellation);
+
+            new WinsockWatcher(_dispatcher)
                 .StartWatching(cancellation);
 
             //and here too
@@ -56,13 +56,11 @@ namespace Servicedog
             new ProcessAnalyser(_dispatcher)
                 .StartAnalysing(cancellation);
 
-            return true;
         }
 
-        public bool Stop()
+        public void Stop()
         {
             _cancelTasks.Cancel();
-            return true;
         }
 
         //not yet necessary
@@ -79,10 +77,9 @@ namespace Servicedog
         //}
 
 
-        public bool Shutdown()
+        public void Shutdown()
         {
             _cancelTasks.Cancel();
-            return true;
 
         }
 

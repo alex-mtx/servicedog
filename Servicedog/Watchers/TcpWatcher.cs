@@ -13,6 +13,8 @@ namespace Servicedog.Watchers
     public class TcpWatcher : Watcher
     {
         public const string TCP_RECONNECT = "TcpIpReconnect";
+        public const string TCP_CONNECT = "TcpIpConnect";
+        public const string TCP_DISCONNECT = "TcpIpDisconnect";
 
         public TcpWatcher(IDispatcher sender) : base(sender) { }
 
@@ -39,6 +41,34 @@ namespace Servicedog.Watchers
                     //TODO: log it
                     //TODO: check all Exceptions that can be thrown by the _sender instance.
                     throw;
+                    }
+                };
+
+                traceLogSource.Kernel.TcpIpConnect += (TcpIpConnectTraceData data) =>
+                {
+                    try
+                    {
+                        _sender.Send(data.ProcessID, data.ToXml(new System.Text.StringBuilder()).ToString(), TCP_CONNECT);
+                    }
+                    catch (Exception)
+                    {
+                        //TODO: log it
+                        //TODO: check all Exceptions that can be thrown by the _sender instance.
+                        throw;
+                    }
+                };
+
+                traceLogSource.Kernel.TcpIpDisconnect += (TcpIpTraceData data) =>
+                {
+                    try
+                    {
+                        _sender.Send(data.ProcessID, data.ToXml(new System.Text.StringBuilder()).ToString(), TCP_CONNECT);
+                    }
+                    catch (Exception)
+                    {
+                        //TODO: log it
+                        //TODO: check all Exceptions that can be thrown by the _sender instance.
+                        throw;
                     }
                 };
                 traceLogSource.Process();

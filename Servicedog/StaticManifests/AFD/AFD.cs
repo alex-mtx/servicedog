@@ -1834,8 +1834,7 @@ namespace Servicedog.Manifests.Afd
         public Address Buffer { get { return GetAddressAt(HostOffset(16, 2)); } }
         public int BufferLength { get { return GetInt32At(HostOffset(20, 3)); } }
         public int Status { get { return GetInt32At(HostOffset(24, 3)); } }
-        public int AddressLen { get { return GetInt32At(HostOffset(28, 3)); } }
-        public byte[] Address { get { return GetByteArrayAt(HostOffset(32, 3), AddressLen); } }
+        public int AddressLen { get { return GetInt32At(HostOffset(28, 3)); }}
 
         #region Private
         internal AfdConnectWithAddressConnectedArgs(Action<AfdConnectWithAddressConnectedArgs> target, int eventID, int task, string taskName, Guid taskGuid, int opcode, string opcodeName, Guid providerGuid, string providerName)

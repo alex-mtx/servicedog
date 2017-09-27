@@ -15,6 +15,11 @@ namespace Servicedog.Analysers
         public const string NETWORK_UNREACHABLE_DESTINATION = "NETWORK_UNREACHABLE_DESTINATION";
         public const string NETWORK_COULD_NOT_RESOLVE_NAME = "NETWORK_COULD_NOT_RESOLVE_NAME";
         public const string NETWORK_DNS_QUERY_TIMEOUT = "NETWORK_DNS_QUERY_TIMEOUT";
+        public const string NETWORK_NEW_CONNECTION = "NETWORK_NEW_CONNECTION";
+        public const string NETWORK_END_CONNECTION = "NETWORK_END_CONNECTION";
+        public const string SOCKET_ABORT= "SOCKET_ABORT";
+        public const string SOCKET_CONNECT= "SOCKET_CONNECT";
+        public const string SOCKET_CAN_NOT_CONNECT = "SOCKET_CAN_NOT_CONNECT";
 
         private readonly IDictionary<string, IMessage> _tcpEvents = new Dictionary<string, IMessage>();
 
@@ -32,12 +37,30 @@ namespace Servicedog.Analysers
                     ProcessTcpReconnect(message);
                     break;
 
+                case TcpWatcher.TCP_CONNECT:
+                    FanOutEvent(message, NETWORK_NEW_CONNECTION);
+                    break;
+
+                case TcpWatcher.TCP_DISCONNECT:
+                    FanOutEvent(message, NETWORK_END_CONNECTION);
+                    break;
+
                 case DnsWatcher.DNS_NAME_ERROR:
-                    ProcessDNSErrors(message,NETWORK_COULD_NOT_RESOLVE_NAME);
+                    FanOutEvent(message,NETWORK_COULD_NOT_RESOLVE_NAME);
                     break;
 
                 case DnsWatcher.DNS_TIMED_OUT:
-                    ProcessDNSErrors(message,NETWORK_DNS_QUERY_TIMEOUT);
+                    FanOutEvent(message,NETWORK_DNS_QUERY_TIMEOUT);
+                    break;
+
+                case WinsockWatcher.ABORT:
+                    FanOutEvent(message, SOCKET_ABORT);
+                    break;
+                case WinsockWatcher.CONNECT:
+                    FanOutEvent(message, SOCKET_CONNECT);
+                    break;
+                case WinsockWatcher.ERROR_ON_CONNECT:
+                    FanOutEvent(message, SOCKET_CAN_NOT_CONNECT);
                     break;
 
                 default:
@@ -47,12 +70,12 @@ namespace Servicedog.Analysers
 
             }
 
-            Console.WriteLine(message.ToJson());
+            Debug.WriteLine(message.ToJson());
         }
 
-        private void ProcessDNSErrors(IMessage message,string error)
+        private void FanOutEvent(IMessage message,string routingKey)
         {
-            _dispatcher.Send(message.ProcessId, message.Body, error);
+            _dispatcher.Send(message.ProcessId, message.Body, routingKey);
         }
 
         private void ProcessTcpReconnect(IMessage message)
@@ -63,11 +86,11 @@ namespace Servicedog.Analysers
 
                 //Send error down the pipe
                 _dispatcher.Send(message.ProcessId, message.Body, NETWORK_UNREACHABLE_DESTINATION);
-                Console.WriteLine(" TCP failed to connect to " + message.ToJson());
+                Debug.WriteLine(" TCP failed to connect to " + message.ToJson());
 
                 //no need to keep this as we are now on the second occurrence of same error of the same process
                 _tcpEvents.Remove(message.ToString());
-
+                return;
             }
 
             //on the first event take no further action
@@ -78,7 +101,12 @@ namespace Servicedog.Analysers
         {
             return new[] {  TcpWatcher.TCP_RECONNECT,
                             DnsWatcher.DNS_NAME_ERROR,
-                            DnsWatcher.DNS_TIMED_OUT
+                            DnsWatcher.DNS_TIMED_OUT,
+                            WinsockWatcher.ABORT,
+                            WinsockWatcher.CONNECT,
+                            WinsockWatcher.ERROR_ON_CONNECT,
+                            TcpWatcher.TCP_CONNECT,
+                            TcpWatcher.TCP_DISCONNECT
                             };
 
         }

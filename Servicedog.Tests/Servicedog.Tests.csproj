@@ -56,6 +56,7 @@
     <Compile Include="Watchers\AbstractWatcherTest.cs" />
     <Compile Include="Watchers\ProcessTest.cs" />
     <Compile Include="Watchers\ClrTest.cs" />
+    <Compile Include="Watchers\WinsockTest.cs" />
     <Compile Include="Watchers\TcpTest.cs" />
     <Compile Include="Watchers\DnsTest.cs" />
   </ItemGroup>

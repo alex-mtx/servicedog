@@ -10,13 +10,13 @@ using System.Threading;
 namespace Servicedog.Tests.Watchers
 {
     [TestFixture]
-    public class TcpTest
+    public class WinsockTest
     {
         /// <summary>
         /// this is a tricky test. the DNS must resolve the
         /// </summary>
-        [Test(TestOf = typeof(TcpWatcher))]
-        public void When_Tcp_Can_Not_Start_A_Conversation_Should_Notify_Via_Dispatcher()
+        [Test(TestOf = typeof(WinsockWatcher))]
+        public void When_A_Socket_Can_Not_Connect_Should_Notify_Via_Dispatcher()
         {
             // use always IP addresses or a valid and resolvable DNS entry, otherwise the problem will be a DNS error instead a TCP one. 
             //Keep in mind that if the hostname could not be resolved, the first error will be a DNS, not a TCP.
@@ -27,19 +27,19 @@ namespace Servicedog.Tests.Watchers
             var events = new List<Message>();
             var dispatcherMoq = WatcherTest.PrepareMock(events);
                          
-            var tcp = new TcpWatcher(dispatcherMoq.Object);
+            var winsock = new WinsockWatcher(dispatcherMoq.Object);
 
             //act
-            tcp.StartWatching(cancel);
-            Thread.Sleep(1000);
+            winsock.StartWatching(cancel);
+            Thread.Sleep(2000);
             //now we force a tcp connection to nowhere
             CallService(unavailableServiceUrl);
 
             //give some room to ETW to raise the Tcp Event
-           Thread.Sleep(3000);
+           Thread.Sleep(4000);
 
             WatcherTest.AssertSendCalled(dispatcherMoq, Times.AtLeastOnce());
-            WatcherTest.AssertExpectedEventSent(events, TcpWatcher.TCP_RECONNECT, unavailableService);
+            WatcherTest.AssertExpectedEventSent(events, WinsockWatcher.ERROR_ON_CONNECT, string.Empty);
         }
 
         private static void CallService(string unavailableServiceUrl)
@@ -49,9 +49,8 @@ namespace Servicedog.Tests.Watchers
 
                 using (var cli = new HttpClient())
                 {
-                    cli.BaseAddress = new Uri(unavailableServiceUrl);
                     cli.Timeout = new TimeSpan(0, 0, 1);
-                    var asyncTask = cli.GetAsync(new Uri("/nothing", UriKind.Relative));
+                    var asyncTask = cli.GetAsync(new Uri(unavailableServiceUrl));
                     asyncTask.Wait();
                 }
             }

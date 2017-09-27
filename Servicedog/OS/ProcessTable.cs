@@ -37,11 +37,8 @@ namespace Servicedog.OS
             var process = new ProcessInfo();
             process.IsDefault = true;//if something goes wrong the client code won't explode with null exceptions
 
-            if (_table.Count == 0)
-                return process;
-
-            if(_table.TryGetValue((uint)id, out process))
-                process.IsDefault = false;
+            if (_table.ContainsKey((uint)id))
+                return _table[(uint)id];
 
             return process;
         }

@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using Servicedog.Messaging;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace Servicedog.Tests.Watchers
@@ -10,7 +9,7 @@ namespace Servicedog.Tests.Watchers
     public class WatcherTest
     {
 
-        public static void AssertExpectedEventIsSent(List<Message> events,string expectedRoutingKey, string partialBodyContents)
+        public static void AssertExpectedEventSent(List<Message> events,string expectedRoutingKey, string partialBodyContents)
         {
 
             Assert.IsTrue(
@@ -18,7 +17,7 @@ namespace Servicedog.Tests.Watchers
                                    && message.Body.Contains(partialBodyContents)));
         }
 
-        public static void AssertMockCheckDoesNotThrow(Mock<IDispatcher> dispatcherMoq, Times expectedExecutions)
+        public static void AssertSendCalled(Mock<IDispatcher> dispatcherMoq, Times expectedExecutions)
         {
             Assert.DoesNotThrow(() =>
              dispatcherMoq.Verify(

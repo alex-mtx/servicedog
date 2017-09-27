@@ -48,8 +48,8 @@ namespace Servicedog.Tests.Watchers
             //give some room to ETW to raise the  Event
             Thread.Sleep(3000);
 
-            WatcherTest.AssertMockCheckDoesNotThrow(dispatcherMoq, Times.AtLeastOnce());
-            WatcherTest.AssertExpectedEventIsSent(events, ProcessWatcher.PROCESS_CREATION, "cmd.exe");
+            WatcherTest.AssertSendCalled(dispatcherMoq, Times.AtLeastOnce());
+            WatcherTest.AssertExpectedEventSent(events, ProcessWatcher.PROCESS_CREATION, "cmd.exe");
         }
     }
 }

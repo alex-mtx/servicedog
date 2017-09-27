@@ -35,8 +35,8 @@ namespace Servicedog.Tests.Watchers
             //give some room to ETW to raise the DNS error Event
             Thread.Sleep(2000);
 
-            WatcherTest.AssertMockCheckDoesNotThrow(dispatcherMoq, Times.AtLeastOnce());
-            WatcherTest.AssertExpectedEventIsSent(events, DnsWatcher.DNS_NAME_ERROR, falseDnsEntry);
+            WatcherTest.AssertSendCalled(dispatcherMoq, Times.AtLeastOnce());
+            WatcherTest.AssertExpectedEventSent(events, DnsWatcher.DNS_NAME_ERROR, falseDnsEntry);
         }
 
         private static void CallService(string unavailableServiceUrl)

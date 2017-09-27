@@ -29,7 +29,6 @@ namespace Servicedog.Watchers
                 _sender.Send(data.ProcessID, data.ToXml(new StringBuilder()).ToString(), ABORT);
             };
 
-            //TODO: decode the IP address from data.Address... I spended days trying without success.
             parser.AfdConnectWithAddress += (AfdConnectWithAddressConnectedArgs data) =>
             {
                 _sender.Send(data.ProcessID, data.ToXml(new StringBuilder()).ToString(), CONNECT);
