@@ -65,6 +65,7 @@
     <Compile Include="Analysers\Analyser.cs" />
     <Compile Include="Analysers\IAnalyser.cs" />
     <Compile Include="Analysers\ProcessAnalyser.cs" />
+    <Compile Include="Infrastructure\SetupApp.cs" />
     <Compile Include="Messaging\IDispatcher.cs" />
     <Compile Include="Messaging\IMessage.cs" />
     <Compile Include="Messaging\IReceiver.cs" />

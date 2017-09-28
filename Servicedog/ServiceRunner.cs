@@ -30,31 +30,13 @@ namespace Servicedog
 #endif
         }
 
-        public void Start()//TODO: need do simplify all these instaces...
+        public void Start()
         {
 
             var cancellation = _cancelTasks.Token;
 
-            //TODO: need a better design here.. I would like just to implement the specialized classes
-            // and.. bang! something outside it just bring it into life!
-            new DnsWatcher(_dispatcher)
-                .StartWatching(cancellation);
-
-            new TcpWatcher(_dispatcher)
-                .StartWatching(cancellation);
-
-            //new ProcessWatcher(_dispatcher)
-            //    .StartWatching(cancellation);
-
-            new WinsockWatcher(_dispatcher)
-                .StartWatching(cancellation);
-
-            //and here too
-            new NetworkAnalyser(_dispatcher)
-                .StartAnalysing(cancellation);
-
-            new ProcessAnalyser(_dispatcher)
-                .StartAnalysing(cancellation);
+            var watchers = Infrastructure.SetupApp.InstantiateWatchers(_dispatcher);
+            watchers.ForEach(watcher => watcher.StartWatching(cancellation));
 
         }
 
