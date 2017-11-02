@@ -1,6 +1,7 @@
 ﻿using Moq;
 using NUnit.Framework;
 using Servicedog.Messaging;
+using Servicedog.OS;
 using Servicedog.Watchers;
 using System.Collections.Generic;
 using System.Threading;
@@ -9,6 +10,11 @@ namespace Servicedog.Tests.Watchers
 {
     public class ProcessTest
     {
+        [OneTimeSetUp]
+        public void EnsureConfiguration()
+        {
+            EnvironmentChecker.EnsureIsAdministrator();
+        }
         /// <summary>
         /// this is a tricky test. the DNS must resolve the
         /// </summary>
@@ -35,7 +41,7 @@ namespace Servicedog.Tests.Watchers
             
             //act
             processWatcher.StartWatching(cancel);
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             
             var p = new System.Diagnostics.Process();
             p.StartInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe");

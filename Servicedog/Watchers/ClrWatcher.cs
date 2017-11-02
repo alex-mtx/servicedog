@@ -15,10 +15,6 @@ namespace Servicedog.Watchers
         {
         }
 
-      
-
-       
-
         protected override void Capture(TraceEventSession session)
         {
             session.EnableProvider(ClrTraceEventParser.ProviderGuid);

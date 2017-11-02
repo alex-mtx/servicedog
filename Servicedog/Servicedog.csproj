@@ -71,6 +71,7 @@
     <Compile Include="Messaging\IReceiver.cs" />
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\Receivers\MessageReceiver.cs" />
+    <Compile Include="OS\EnvironmentChecker.cs" />
     <Compile Include="ServiceRunner.cs" />
     <Compile Include="Analysers\NetworkAnalyser.cs" />
     <Compile Include="Messaging\MessageMiddleware.cs" />

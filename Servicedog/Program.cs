@@ -17,7 +17,7 @@ namespace Servicedog
     {
         static void Main(string[] args)
         {
-            EnsureIsAdministrator();
+            EnvironmentChecker.EnsureIsAdministrator();
 
             HostFactory.New(x =>
             {
@@ -36,13 +36,7 @@ namespace Servicedog
         }
 
 
-        public static void  EnsureIsAdministrator()
-        {
-            var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            if( principal.IsInRole(WindowsBuiltInRole.Administrator) == false)
-                throw new ApplicationException("Servicedog requires Admin privileges to run in order to start ETW Kernel Sessions");
-        }
+       
 
     }
 }
